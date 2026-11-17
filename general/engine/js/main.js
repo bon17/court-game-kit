@@ -227,10 +227,6 @@
       canResume ? '이어하기 (' + (multi ? '제' + savedEp.번호 + '화 ' : '') + '「' + (savedEp.막[saved.막].이름 || '') + '」부터)' : '이어하기'));
     if (multi && C.화선택 !== '코드') menu.append(h('button', { class: 'ui-btn sub', onclick: episodeScreen }, '이야기 고르기'));
     if (C.화선택 === '코드' && eps.some((e) => e.코드)) menu.append(h('button', { class: 'ui-btn sub', onclick: codeScreen }, '코드 입력'));
-    // 쓰기 활동만 바로 하기 (게임을 끝까지 못 한 학생, 결석한 학생)
-    const writes = [];
-    eps.forEach((e) => G.walk(e.막.flatMap((m) => G.list(m.내용)), (c) => { if (c.쓰기) writes.push([e, c.쓰기]); }));
-    writes.forEach(([e, w]) => menu.append(h('button', { class: 'ui-btn sub', onclick: async () => { s.remove(); G.ep = e; await G.writing(w, { 바로: true }); location.reload(); } }, (w.제목 || '쓰기 활동') + '만 하기')));
     if (flag('teacher')) menu.append(h('button', { class: 'ui-btn sub', onclick: teacherScreen }, '교사용: 장면 골라 시작'));
     if (issues && issues.length) {
       const errs = issues.filter((i) => i.수준 === '오류').length;

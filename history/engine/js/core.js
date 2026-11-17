@@ -32,7 +32,7 @@
   G.esc = esc;
 
   // ─────────── 기본값 (engine/js/defaults.js) ───────────
-  const { EXPR, EXPR_EMOJI, SEATS, KINDS, THEMES, FONTS, SOUNDS } = window.KIT_DEFAULTS;
+  const { EXPR, EXPR_EMOJI, SEATS, KINDS, THEMES, FONTS, FONT_FILES, SOUNDS } = window.KIT_DEFAULTS;
   G.cmdKey = window.KIT_DEFAULTS.cmdKey;
 
   // ─────────── 설정 읽기 ───────────
@@ -83,7 +83,14 @@
     root.setProperty('--gold-light', mix(point, '#ffffff', 0.55));
     root.setProperty('--gold-dark', mix(point, '#000000', 0.45));
     root.setProperty('--on-gold', mix(base, '#000000', 0.6));
-    root.setProperty('--font', FONTS[t.글꼴] || FONTS[g.글꼴] || FONTS['고딕']);
+    const font = FONTS[t.글꼴] ? t.글꼴 : FONTS[g.글꼴] ? g.글꼴 : '고딕';
+    root.setProperty('--font', FONTS[font]);
+    // 글꼴 파일은 인터넷에서 받는다 (기다리지 않고 받는 대로 바뀐다. 못 받으면 기기 글꼴)
+    if (FONT_FILES && FONT_FILES[font] && !document.querySelector('link[data-kit-font]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet'; link.href = FONT_FILES[font]; link.setAttribute('data-kit-font', font);
+      document.head.append(link);
+    }
     for (const [k, v] of Object.entries(C.기록종류)) root.setProperty('--k-' + G.kindKey(k), v.색 || '#e8b84a');
     document.title = C.제목;
     STORE = 'kit-' + (C.아이디 || C.제목).replace(/\s+/g, '_');

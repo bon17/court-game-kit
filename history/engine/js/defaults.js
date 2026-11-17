@@ -42,8 +42,13 @@
     '바다': ['#0f4658', '#9fe3ff'], '먹빛': ['#2b2b30', '#e6e2d6'], '숲': ['#243b22', '#c9e27a'],
   };
   D.FONTS = {
-    '명조': '"RIDIBatang", "Noto Serif KR", "AppleMyungjo", "Batang", "바탕", serif',
-    '고딕': '"Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif',
+    '명조': '"Noto Serif KR Variable", "Noto Serif KR", "AppleMyungjo", "Batang", "바탕", serif',
+    '고딕': '"Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif',
+  };
+  // 인터넷이 되면 받아 쓰는 글꼴 (둘 다 SIL 오픈 폰트 라이선스). 인터넷이 없으면 위의 기기 글꼴로 나온다
+  D.FONT_FILES = {
+    '명조': 'https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-serif-kr@5.2.10/index.css',
+    '고딕': 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css',
   };
   // 엔진이 스스로 내는 효과음 이름 (my-game/audio/ 에 이 파일이 있으면 소리가 난다)
   D.SOUNDS = {

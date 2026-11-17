@@ -4,149 +4,359 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>만들기 도우미 · 법정 추리 수업 게임 키트</title>
+<!-- 글꼴: 인터넷이 되면 Pretendard를 받아 쓴다 (기다리지 않는다. 못 받으면 기기 글꼴) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+<script src="ai/guide.js"></script>
+<script>document.documentElement.setAttribute('data-ed', (window.KIT_GUIDE || {}).판 || '');</script>
 <style>
-  :root { --ink: #1c2333; --sub: #5a6478; --line: #d9dee8; --bg: #f4f6fa; --card: #fff; --main: #1f4fa3; --main-soft: #e8effb; --ok: #1d7a45; --warn: #a15c00; --err: #b3261e; }
+  :root {
+    --ink: #1e2230; --sub: #5c6373; --faint: #8b90a0; --line: #e5e0d6; --field: #cdc6b7; --bg: #f3f0e9; --card: #fff;
+    --main: #1c2b52; --main-2: #2a3c6e; --main-soft: #edf0f7; --accent: #e2bf6e; --gold: #85621a; --gold-soft: #f5edda;
+    --ok: #1d7446; --ok-soft: #e8f4ed; --warn-soft: #fbf1df; --err: #b0261c; --err-soft: #fbebe8;
+    --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif;
+    --mono: ui-monospace, "D2Coding", "SF Mono", Consolas, monospace;
+    color-scheme: light;
+  }
+  /* 범용판은 칠판색, 역사판은 남색 (예시 게임의 색과 같게) */
+  :root[data-ed="general"] { --main: #1f4536; --main-2: #2b5a47; --main-soft: #eaf2ed; }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; line-height: 1.6; word-break: keep-all; }
-  header { background: var(--main); color: #fff; padding: 22px 16px 18px; }
-  header .in, main { max-width: 920px; margin: 0 auto; }
-  header h1 { margin: 0; font-size: 24px; }
-  header p { margin: 6px 0 0; opacity: .92; }
-  header .tag { display: inline-block; background: #fff; color: var(--main); font-weight: 800; border-radius: 99px; padding: 2px 12px; font-size: 13px; margin-left: 8px; vertical-align: middle; }
-  nav { position: sticky; top: 0; z-index: 5; background: #fff; border-bottom: 1px solid var(--line); }
-  nav .in { max-width: 920px; margin: 0 auto; display: flex; gap: 4px; overflow-x: auto; padding: 6px 12px; }
-  nav a { flex: none; padding: 6px 12px; border-radius: 99px; color: var(--sub); text-decoration: none; font-weight: 700; font-size: 14px; }
-  nav a:hover { background: var(--main-soft); color: var(--main); }
-  main { padding: 16px 12px 80px; }
-  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 20px; margin-top: 16px; scroll-margin-top: 56px; }
-  section > h2 { margin: 0 0 4px; font-size: 20px; display: flex; align-items: center; gap: 10px; }
-  section > h2 .n { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--main); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; }
-  .lead { color: var(--sub); margin: 0 0 14px; }
-  label.f { display: block; margin: 14px 0 0; font-weight: 800; }
-  label.f .req { color: var(--err); margin-left: 4px; }
-  .help { color: var(--sub); font-size: 14px; font-weight: 400; display: block; }
-  input[type=text], textarea, select { width: 100%; margin-top: 6px; padding: 10px 12px; border: 1px solid #b8c0d0; border-radius: 10px; font: inherit; background: #fff; color: var(--ink); }
-  textarea { min-height: 92px; resize: vertical; }
-  textarea.code { font-family: ui-monospace, "D2Coding", Consolas, monospace; font-size: 13px; min-height: 200px; white-space: pre; overflow: auto; }
-  input:focus, textarea:focus, select:focus { outline: 2px solid var(--main); outline-offset: 1px; }
-  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
-  button, .btn { font: inherit; font-weight: 800; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--main); background: var(--main); color: #fff; cursor: pointer; }
-  button.sub { background: #fff; color: var(--main); }
-  button.small { padding: 5px 10px; font-size: 13px; }
-  button:disabled { opacity: .45; cursor: default; }
-  .note { background: var(--main-soft); border-radius: 10px; padding: 10px 14px; margin-top: 12px; font-size: 14px; }
-  .note.warn { background: #fff4e0; }
-  .said { font-size: 14px; color: var(--ok); font-weight: 700; min-height: 1.4em; }
-  .checks label { display: block; font-weight: 400; margin-top: 4px; }
-  .checks input { margin-right: 8px; }
-  .stat { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-  .stat span { background: var(--bg); border: 1px solid var(--line); border-radius: 99px; padding: 3px 12px; font-size: 14px; }
-  .issues { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
-  .issue { border-left: 5px solid var(--line); background: var(--bg); border-radius: 0 10px 10px 0; padding: 8px 12px; font-size: 14px; }
-  .issue b { display: block; }
-  .issue.err { border-color: var(--err); background: #fdeceb; }
-  .issue.warn { border-color: #e39a1a; background: #fff6e5; }
-  .issue.ok { border-color: var(--ok); background: #e8f6ee; }
-  .issue small { color: var(--sub); display: block; }
-  .issue code { background: #fff; padding: 1px 6px; border-radius: 6px; display: block; overflow: auto; margin-top: 4px; }
+  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; word-break: keep-all; overflow-wrap: break-word; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--bg); padding: 0 4px; border-radius: 3px; }
+  a { color: var(--main); }
+  .hidden { display: none !important; }
+
+  /* 버튼 */
+  button { font: inherit; font-size: 14.5px; font-weight: 600; line-height: 1.3; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--main); background: var(--main); color: #fff; cursor: pointer; }
+  button:hover { background: var(--main-2); border-color: var(--main-2); }
+  button.sub { background: #fff; color: var(--main); border-color: var(--field); }
+  button.sub:hover { background: var(--main-soft); border-color: var(--main); }
+  button.small { padding: 4px 9px; font-size: 13px; }
+  button.big { padding: 10px 18px; font-size: 15.5px; }
+  button:disabled { opacity: .4; cursor: default; pointer-events: none; }
+  button:focus-visible { outline: 2px solid var(--main); outline-offset: 2px; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center; }
+  .said { font-size: 13.5px; color: var(--ok); font-weight: 600; }
+
+  /* 위: 이름과 단계 */
+  .top { position: sticky; top: 0; z-index: 10; }
+  .top-bar { background: var(--main); color: #fff; }
+  .top-bar .in, .steps .in, .bar .in, main { max-width: 920px; margin: 0 auto; }
+  .top-bar .in { display: flex; align-items: center; gap: 10px; padding: 7px 16px; min-height: 44px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; letter-spacing: -.01em; }
+  .brand svg { color: var(--accent); flex: none; }
+  .brand .ed { font-size: 12px; font-weight: 600; color: var(--accent); border: 1px solid rgba(226, 191, 110, .6); border-radius: 4px; padding: 0 6px; line-height: 1.6; }
+  .top-bar .help-btn { margin-left: auto; background: transparent; border-color: rgba(255, 255, 255, .4); padding: 4px 11px; font-size: 13.5px; }
+  .top-bar .help-btn:hover { background: rgba(255, 255, 255, .12); }
+  .steps { background: #fff; border-bottom: 1px solid var(--line); }
+  .steps .in { display: flex; padding: 0 8px; }
+  .steps button { flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 4px 7px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; color: var(--sub); font-size: 14px; white-space: nowrap; }
+  .steps button:hover { background: var(--bg); color: var(--ink); border-color: transparent; }
+  .steps .n { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--field); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .steps .t { overflow: hidden; text-overflow: ellipsis; }
+  .steps button.done .n { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .steps button[aria-current="step"], .steps button[aria-current="step"]:hover { color: var(--main); border-bottom-color: var(--main); }
+  .steps button[aria-current="step"] .n { background: var(--main); border-color: var(--main); color: #fff; }
+
+  /* 가운데: 한 번에 한 단계만 */
+  main { flex: 1 0 auto; width: 100%; padding: 14px 16px 18px; }
+  .page { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px 20px; }
+  .head { display: flex; align-items: flex-start; gap: 10px 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .head > div:first-child { flex: 1 1 320px; min-width: 0; }
+  .head .tools { display: flex; gap: 6px; flex-wrap: wrap; }
+  .kicker { margin: 0; font-size: 13px; font-weight: 700; color: var(--gold); }
+  .page h2 { margin: 1px 0 3px; font-size: 21px; font-weight: 700; letter-spacing: -.02em; line-height: 1.35; }
+  .lead { margin: 0; color: var(--sub); font-size: 14.5px; }
+  h3.sh { margin: 18px 0 8px; font-size: 15px; font-weight: 700; }
+  .note { background: var(--main-soft); border-radius: 6px; padding: 9px 12px; margin-top: 12px; font-size: 13.5px; }
+  .note.warn { background: var(--warn-soft); color: #5a3b0a; }
+  .note button { margin-left: 4px; }
+  .tips { margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--sub); }
+  .tips li { margin: 3px 0; }
+  .tips b { color: var(--ink); font-weight: 600; }
   details { margin-top: 12px; }
-  details > summary { cursor: pointer; font-weight: 800; color: var(--main); }
-  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; margin-top: 10px; }
-  .slot { border: 1px solid var(--line); border-radius: 12px; padding: 8px; text-align: center; background: #fff; font-size: 13px; }
-  .slot.drag { outline: 3px dashed var(--main); }
-  .slot .pic { width: 100%; aspect-ratio: 1; border-radius: 8px; background: repeating-conic-gradient(#eef1f6 0 25%, #fff 0 50%) 0 0 / 16px 16px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: #9aa3b5; font-size: 28px; }
+  details > summary { cursor: pointer; font-weight: 600; color: var(--main); font-size: 14px; }
+  .checks label { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; padding: 2px 0; cursor: pointer; }
+  .checks input, .optlist input { margin: 4px 0 0; flex: none; accent-color: var(--main); }
+  .checks small { color: var(--sub); }
+
+  /* 사용법 */
+  .guide { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 16px 32px; }
+  .guide .lead { color: var(--ink); font-size: 15px; margin-top: 4px; }
+  .guide dl { margin: 12px 0 0; font-size: 14px; }
+  .guide dt { font-weight: 700; margin-top: 10px; }
+  .guide dd { margin: 1px 0 0; color: var(--sub); }
+  .gsteps { list-style: none; margin: 0; padding: 0; }
+  .gsteps li { display: grid; grid-template-columns: 26px 1fr; gap: 0 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .gsteps li:first-child { border-top: 0; padding-top: 2px; }
+  .gsteps .n { width: 26px; height: 26px; border-radius: 50%; background: var(--main); color: #fff; font-weight: 700; font-size: 13.5px; display: flex; align-items: center; justify-content: center; }
+  .gsteps b { font-size: 15px; }
+  .gsteps p { margin: 2px 0 0; color: var(--sub); font-size: 14px; }
+  .where { display: inline-block; margin-left: 7px; font-size: 11.5px; font-weight: 700; padding: 0 6px; border-radius: 3px; vertical-align: 1px; background: var(--main-soft); color: var(--main); }
+  .where.ai { background: var(--gold-soft); color: var(--gold); }
+  .where.opt { background: var(--bg); color: var(--sub); }
+  .credit { margin: 16px 0 0; padding-top: 10px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12.5px; }
+
+  /* 1. 설계서 */
+  .subtabs { display: flex; align-items: center; gap: 2px; margin: -2px 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .subtabs button { background: none; border: 0; color: var(--sub); font-size: 13.5px; padding: 4px 9px; border-radius: 5px; white-space: nowrap; }
+  .subtabs button:hover { background: var(--bg); color: var(--ink); }
+  .subtabs button[aria-current="true"] { background: var(--main-soft); color: var(--main); }
+  .subtabs .saved { margin-left: auto; padding-left: 10px; color: var(--faint); font-size: 12.5px; white-space: nowrap; }
+  .fpage { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+  .fld { min-width: 0; }
+  .fld.wide { grid-column: 1 / -1; }
+  .fld .l { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14.5px; }
+  .req { font-size: 11.5px; font-weight: 700; color: var(--gold); background: var(--gold-soft); padding: 0 5px; border-radius: 3px; line-height: 1.6; }
+  .help { margin: 1px 0 0; color: var(--sub); font-size: 13px; line-height: 1.45; }
+  input[type=text], textarea, select { display: block; width: 100%; margin-top: 6px; padding: 8px 10px; border: 1px solid var(--field); border-radius: 6px; font: inherit; font-size: 14.5px; background: #fff; color: var(--ink); }
+  textarea { min-height: 78px; resize: vertical; line-height: 1.5; }
+  textarea.code { font-family: var(--mono); font-size: 12.5px; line-height: 1.45; min-height: 190px; white-space: pre; overflow: auto; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--main); outline-offset: -1px; border-color: var(--main); }
+  ::placeholder { color: #a5aab5; }
+  .optlist { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; margin-top: 6px; }
+  .optlist label { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; padding: 2px 0; cursor: pointer; }
+
+  /* 2. AI에게 주기 */
+  .give { display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+  .give .info { flex: 1 1 220px; }
+  .give .info b { display: block; font-size: 15px; }
+  .give .info span { color: var(--sub); font-size: 13.5px; }
+  .give .btns { margin: 0; }
+  .give + .checks { margin-top: 10px; }
+  .flow { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .flow li { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; color: var(--sub); }
+  .flow li b { display: block; color: var(--ink); font-size: 14.5px; margin: 1px 0 2px; }
+  .flow .k { font-size: 12px; font-weight: 700; color: var(--gold); }
+
+  /* 3. 점검 */
+  .gt { margin: 16px 0 6px; font-size: 16px; font-weight: 700; }
+  .stat { display: flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .stat div { flex: 1 1 auto; min-width: 76px; padding: 6px 12px; border-right: 1px solid var(--line); }
+  .stat div:last-child { border-right: 0; }
+  .stat b { display: block; font-size: 16.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat small { color: var(--sub); font-size: 12.5px; }
+  .issues { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .issues:empty { display: none; }
+  .issue { display: flex; gap: 10px; padding: 8px 12px; font-size: 14px; border-top: 1px solid var(--line); background: #fff; }
+  .issue:first-child { border-top: 0; }
+  .issue .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; background: var(--faint); }
+  .issue.err { background: var(--err-soft); }
+  .issue.err .dot { background: var(--err); }
+  .issue.warn .dot { background: #d68a12; }
+  .issue.ok { background: var(--ok-soft); }
+  .issue.ok .dot { background: var(--ok); }
+  .issue .tx { min-width: 0; }
+  .issue b { display: block; font-weight: 700; }
+  .issue small { display: block; color: var(--sub); font-size: 13px; margin-top: 1px; }
+  .issue code { display: block; overflow: auto; margin-top: 4px; background: #fff; padding: 2px 6px; white-space: pre; }
+  #result details .checks { margin-top: 6px; }
+
+  /* 4. 그림 */
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); gap: 8px; margin-top: 8px; }
+  .slot { border: 1px solid var(--line); border-radius: 8px; padding: 6px; text-align: center; background: #fff; font-size: 12.5px; }
+  .slot.drag { outline: 2px dashed var(--main); outline-offset: 2px; }
+  .slot .pic { width: 100%; aspect-ratio: 1; border-radius: 5px; background: repeating-conic-gradient(#efece5 0 25%, #fff 0 50%) 0 0 / 14px 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: #a9a49a; font-size: 24px; }
   .slot.wide .pic { aspect-ratio: 3 / 2; }
   .slot .pic img { width: 100%; height: 100%; object-fit: contain; }
-  .slot b { display: block; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .slot .row { display: flex; gap: 4px; justify-content: center; margin-top: 6px; }
-  .hidden { display: none !important; }
+  .slot b { display: block; margin-top: 5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .slot .row { display: flex; gap: 4px; justify-content: center; margin-top: 5px; }
+
+  /* 5. 해 보기 · 내보내기 */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .blk { border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+  .blk h3 { margin: 0; font-size: 16px; }
+  .blk p { margin: 2px 0 0; color: var(--sub); font-size: 13.5px; }
+  .blk .btns { flex-direction: column; align-items: stretch; }
+  #need-check { margin: 0 0 12px; }
+
+  /* 아래: 이전 · 다음 */
+  .bar { position: sticky; bottom: 0; z-index: 10; background: rgba(255, 255, 255, .97); border-top: 1px solid var(--line); }
+  .bar .in { display: flex; align-items: center; gap: 10px; padding: 9px 16px; }
+  .bar .hint { flex: 1; min-width: 0; text-align: center; color: var(--sub); font-size: 13.5px; }
+  .bar .gap { visibility: hidden; }
+  #btn-next { padding: 9px 18px; font-size: 15px; }
+
   #autoframe { position: absolute; left: -3000px; top: 0; width: 960px; height: 640px; border: 0; }
-  footer { text-align: center; color: var(--sub); font-size: 13px; margin-top: 24px; }
+
+  @media (max-width: 760px) {
+    .guide { grid-template-columns: 1fr; }
+    .flow { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    main { padding: 10px 10px 14px; }
+    .page { padding: 14px 14px 16px; }
+    .page h2 { font-size: 19px; }
+    .steps .in { padding: 0 4px; }
+    .steps button { flex: 0 0 auto; padding-inline: 8px; }
+    .steps button .t { display: none; }
+    .steps button[aria-current="step"] { flex: 1 1 auto; }
+    .steps button[aria-current="step"] .t { display: inline; }
+    .fpage, .optlist, .two { grid-template-columns: 1fr; }
+    .subtabs .saved { display: none; }
+    .bar .hint { display: none; }
+    .bar .in { justify-content: space-between; padding: 8px 10px; }
+  }
 </style>
 </head>
 <body>
-<header><div class="in">
-  <h1>만들기 도우미 <span class="tag" id="edition"></span></h1>
-  <p id="intro">수업 설계를 적으면 AI에게 줄 글을 만들어 주고, AI가 써 준 게임을 점검해서 파일 하나로 내보냅니다. 인터넷 없이, 설치 없이 이 화면에서 끝납니다.</p>
-</div></header>
-<nav><div class="in">
-  <a href="#s1">① 설계서</a><a href="#s2">② AI에게 주기</a><a href="#s3">③ 답 넣고 점검</a><a href="#s4">④ 그림 (선택)</a><a href="#s5">⑤ 해 보기 · 내보내기</a>
-</div></nav>
+<div class="top">
+  <div class="top-bar"><div class="in">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M8 20.5h8M4.5 6.5h15"/><path d="M4.5 6.5 2 13M4.5 6.5 7 13M1.6 13a2.9 2.9 0 0 0 5.8 0z"/><path d="M19.5 6.5 17 13M19.5 6.5 22 13M16.6 13a2.9 2.9 0 0 0 5.8 0z"/></svg>
+      <span>만들기 도우미</span><span class="ed" id="edition"></span>
+    </div>
+    <button class="help-btn" id="btn-guide" type="button">사용법</button>
+  </div></div>
+  <nav class="steps" aria-label="만드는 단계"><div class="in" id="steps">
+    <button type="button" data-go="1"><span class="n">1</span><span class="t">설계서</span></button>
+    <button type="button" data-go="2"><span class="n">2</span><span class="t">AI에게 주기</span></button>
+    <button type="button" data-go="3"><span class="n">3</span><span class="t">답 넣고 점검</span></button>
+    <button type="button" data-go="4"><span class="n">4</span><span class="t">그림 (선택)</span></button>
+    <button type="button" data-go="5"><span class="n">5</span><span class="t">해 보기 · 내보내기</span></button>
+  </div></nav>
+</div>
+
 <main>
 
-<section id="s1">
-  <h2><span class="n">1</span>수업 설계서 쓰기</h2>
-  <p class="lead">아는 만큼만 적으면 됩니다. <b>*</b> 표시만 꼭 채워 주세요. 쓴 내용은 이 컴퓨터에 자동으로 저장됩니다.</p>
+<section class="page" id="guide" data-step="guide">
+  <div class="guide">
+    <div>
+      <p class="kicker">사용법</p>
+      <h2>수업 설계를 적으면, 내 AI가 게임을 써 줍니다</h2>
+      <p class="lead" id="intro"></p>
+      <dl>
+        <dt>준비할 것</dt>
+        <dd>평소 쓰는 AI(Claude, ChatGPT, Gemini 등)의 대화창과 수업 메모. 처음 한 편은 30분쯤 걸립니다.</dd>
+        <dt>어떤 게임이 나오나요?</dt>
+        <dd>학생이 증언 속 모순을 찾아 증거를 내미는 법정 추리 게임입니다. <a href="index.html" target="_blank">예시 게임</a>을 먼저 해 보면 감이 옵니다.</dd>
+        <dt>쓴 내용은</dt>
+        <dd>이 브라우저에 저장되어, 창을 닫았다 열어도 이어서 할 수 있습니다. 다른 컴퓨터에서 고치려면 5단계에서 받은 게임 파일을 3단계에서 불러오세요.</dd>
+      </dl>
+      <div class="btns">
+        <button class="big" id="btn-start" type="button">시작하기</button>
+        <button class="sub big" id="btn-start-example" type="button">예시로 채워서 둘러보기</button>
+      </div>
+    </div>
+    <ol class="gsteps">
+      <li><span class="n">1</span><div><b>설계서 쓰기</b><span class="where">이 화면</span><p>단원, 학습 목표, 학생들이 자주 틀리는 생각을 적습니다. 아는 만큼만 적고 빈칸은 AI에게 맡겨도 됩니다.</p></div></li>
+      <li><span class="n">2</span><div><b>AI에게 주기</b><span class="where ai">AI 대화창</span><p>이 화면이 만든 글을 복사해 AI에게 붙여 넣습니다. AI가 사건 설계안을 보여 주면 고칠 점을 말하고, 마음에 들면 "좋아, 데이터로 써 줘"라고 합니다.</p></div></li>
+      <li><span class="n">3</span><div><b>답 넣고 점검</b><span class="where">이 화면</span><p>AI가 써 준 데이터를 붙여 넣고 [점검하기]를 누릅니다. 문제가 나오면 수정 요청 글을 복사해 AI에게 다시 줍니다.</p></div></li>
+      <li><span class="n">4</span><div><b>그림 넣기</b><span class="where opt">선택</span><p>그림이 없어도 게임은 됩니다. 그림이 있으면 칸에 끌어다 놓습니다.</p></div></li>
+      <li><span class="n">5</span><div><b>해 보기 · 내보내기</b><span class="where">이 화면</span><p>직접 끝까지 해 본 뒤 게임 파일 하나(.html)로 받아 학생에게 나눠 줍니다.</p></div></li>
+    </ol>
+  </div>
+  <p class="credit" id="foot"></p>
+</section>
+
+<section class="page hidden" id="s1" data-step="1">
+  <div class="head">
+    <div>
+      <p class="kicker">1단계 · 수업 설계서 <span id="sub-no"></span></p>
+      <h2 id="sub-title"></h2>
+      <p class="lead" id="sub-desc"></p>
+    </div>
+    <div class="tools">
+      <button class="sub small" id="btn-example" type="button">예시로 채워 보기</button>
+      <button class="sub small" id="btn-clear" type="button">모두 지우기</button>
+    </div>
+  </div>
+  <div class="subtabs" id="subtabs"></div>
   <div id="form"></div>
-  <div class="btns">
-    <button class="sub" id="btn-example">예시로 채워 보기</button>
-    <button class="sub" id="btn-clear">모두 지우기</button>
-  </div>
 </section>
 
-<section id="s2">
-  <h2><span class="n">2</span>AI에게 주기</h2>
-  <p class="lead">아래 버튼을 누르면 AI에게 보낼 글이 만들어집니다. 평소 쓰는 AI(Claude, ChatGPT, Gemini 등)의 대화창에 <b>통째로 붙여 넣으세요.</b></p>
+<section class="page hidden" id="s2" data-step="2">
+  <div class="head"><div>
+    <p class="kicker">2단계 · AI에게 주기</p>
+    <h2>이 글을 복사해서 AI에게 붙여 넣으세요</h2>
+    <p class="lead">평소 쓰는 AI(Claude, ChatGPT, Gemini 등)의 새 대화창에 통째로 붙여 넣습니다.</p>
+  </div></div>
+  <div class="give">
+    <div class="info"><b>AI에게 줄 글</b><span id="prompt-size"></span></div>
+    <div class="btns">
+      <span class="said" id="said-prompt"></span>
+      <button class="sub" id="btn-save-prompt" type="button">파일로 받기 (.md)</button>
+      <button class="big" id="btn-copy" type="button">복사하기</button>
+    </div>
+  </div>
   <div class="checks">
-    <label><input type="checkbox" id="opt-plan" checked>먼저 사건 설계안을 보여 달라고 하기 (권장: 마음에 들 때까지 고친 뒤 "좋아, 데이터로 써 줘"라고 하면 됩니다)</label>
-    <label><input type="checkbox" id="opt-sample" checked>완성된 예시 게임을 함께 보내기 (권장: AI가 형식을 덜 틀립니다. 글이 길어집니다)</label>
+    <label><input type="checkbox" id="opt-plan" checked><span>먼저 사건 설계안을 보여 달라고 하기 <small>(권장)</small></span></label>
+    <label><input type="checkbox" id="opt-sample" checked><span>완성된 예시 게임을 함께 보내기 <small>(권장: AI가 형식을 덜 틀립니다. 글이 길어집니다)</small></span></label>
   </div>
-  <div class="btns">
-    <button id="btn-prompt">AI에게 줄 글 만들기</button>
-    <button class="sub" id="btn-copy" disabled>복사하기</button>
-    <button class="sub" id="btn-save-prompt" disabled>파일로 받기 (.md)</button>
-    <span class="said" id="said-prompt"></span>
-  </div>
-  <textarea class="code hidden" id="prompt" readonly aria-label="AI에게 줄 글"></textarea>
-  <div class="note">
-    <b>AI와 이야기하는 요령</b><br>
-    · 답이 중간에 끊기면 <b>"끊긴 곳부터 이어서 써 줘"</b>라고 하세요.<br>
-    · 고치고 싶으면 말로 하면 됩니다. 예: "증인을 한 명 더 넣어 줘", "대사를 초등 5학년 수준으로 쉽게", "두 번째 증언이 너무 쉬워".<br>
-    · 고친 뒤에는 <b>"전체 데이터를 다시 써 줘"</b>라고 해서 통째로 받으세요.<br>
-    · 글이 너무 길다고 하면 파일로 받아서 첨부하세요.
-  </div>
+  <div class="note warn hidden" id="prompt-miss"></div>
+  <details><summary>글 내용 보기</summary><textarea class="code" id="prompt" readonly aria-label="AI에게 줄 글"></textarea></details>
+  <h3 class="sh">붙여 넣은 다음에는</h3>
+  <ol class="flow" id="flow"></ol>
+  <ul class="tips">
+    <li>답이 중간에 끊기면 <b>"끊긴 곳부터 이어서 써 줘"</b>라고 하세요.</li>
+    <li>고친 뒤에는 <b>"전체 데이터를 다시 써 줘"</b>라고 해서 통째로 받으세요.</li>
+    <li>글이 너무 길다고 하면 [파일로 받기]로 받아서 첨부하세요.</li>
+  </ul>
 </section>
 
-<section id="s3">
-  <h2><span class="n">3</span>AI의 답 넣고 점검하기</h2>
-  <p class="lead">AI가 써 준 데이터(<code>DATA.게임 = …</code>, <code>DATA.ep1 = …</code>)를 통째로 복사해 아래에 붙여 넣으세요. 앞뒤의 설명 글이 섞여도 괜찮습니다.</p>
+<section class="page hidden" id="s3" data-step="3">
+  <div class="head"><div>
+    <p class="kicker">3단계 · 답 넣고 점검</p>
+    <h2>AI의 답을 붙여 넣고 점검하세요</h2>
+    <p class="lead">AI가 써 준 데이터(<code>DATA.게임 = …</code>, <code>DATA.ep1 = …</code>)를 통째로 붙여 넣습니다. 앞뒤의 설명 글이 섞여도 괜찮습니다.</p>
+  </div></div>
   <textarea class="code" id="paste" placeholder="여기에 AI의 답을 붙여 넣으세요" aria-label="AI의 답"></textarea>
   <div class="btns">
-    <button id="btn-check">점검하기</button>
-    <button class="sub" id="btn-load-file">파일에서 불러오기</button>
-    <button class="sub" id="btn-load-folder">my-game 폴더의 게임 불러오기</button>
+    <button id="btn-check" type="button">점검하기</button>
+    <button class="sub" id="btn-load-file" type="button">파일에서 불러오기</button>
+    <button class="sub" id="btn-load-folder" type="button">my-game 폴더의 게임 불러오기</button>
     <input type="file" id="file" class="hidden" accept=".html,.htm,.js,.txt,.md">
     <span class="said" id="said-check"></span>
   </div>
   <div id="result"></div>
 </section>
 
-<section id="s4">
-  <h2><span class="n">4</span>그림 넣기 (선택)</h2>
-  <p class="lead">그림이 없어도 게임은 됩니다 (이모지 얼굴과 색 배경으로 나옵니다). 그림이 있으면 칸에 끌어다 놓거나 [고르기]를 누르세요. 크기는 자동으로 줄여 줍니다.</p>
-  <div id="images"><div class="note">먼저 ③에서 점검을 해 주세요.</div></div>
+<section class="page hidden" id="s4" data-step="4">
+  <div class="head"><div>
+    <p class="kicker">4단계 · 그림 넣기 (선택)</p>
+    <h2>그림이 있으면 칸에 넣으세요</h2>
+    <p class="lead">그림이 없어도 게임은 됩니다 (이모지 얼굴과 색 배경으로 나옵니다). 칸에 끌어다 놓거나 [고르기]를 누르세요. 크기는 자동으로 줄여 줍니다.</p>
+  </div></div>
+  <div id="images"></div>
 </section>
 
-<section id="s5">
-  <h2><span class="n">5</span>해 보기 · 내보내기</h2>
-  <p class="lead">점검에 <b>오류</b>가 없으면 바로 해 볼 수 있습니다.</p>
-  <div class="btns">
-    <button id="btn-play" disabled>새 창에서 해 보기</button>
-    <button class="sub" id="btn-play-teacher" disabled>교사용으로 열기 (장면 골라 시작)</button>
+<section class="page hidden" id="s5" data-step="5">
+  <div class="head"><div>
+    <p class="kicker">5단계 · 해 보기 · 내보내기</p>
+    <h2>직접 해 보고, 파일 하나로 받으세요</h2>
+  </div></div>
+  <div class="note warn hidden" id="need-check">아직 해 볼 수 없어요. 3단계에서 오류 없이 점검을 마쳐야 합니다. <button class="sub small" type="button" data-go="3">3단계로 가기</button></div>
+  <div class="two">
+    <div class="blk">
+      <h3>직접 해 보기</h3>
+      <p>학생이 보는 화면 그대로 새 창에서 열립니다.</p>
+      <div class="btns">
+        <button id="btn-play" type="button" disabled>새 창에서 해 보기</button>
+        <button class="sub" id="btn-play-teacher" type="button" disabled>교사용으로 열기 (장면 골라 시작)</button>
+      </div>
+    </div>
+    <div class="blk">
+      <h3>학생에게 나눠 주기</h3>
+      <p>게임 파일 하나(.html)에 그림까지 모두 들어갑니다. 두 번 누르면 열립니다.</p>
+      <div class="btns">
+        <button id="btn-export" type="button" disabled>게임 파일 하나로 받기 (.html)</button>
+        <button class="sub" id="btn-export-js" type="button" disabled>폴더용 파일 받기 (settings.js, story.js)</button>
+      </div>
+    </div>
   </div>
-  <div class="btns">
-    <button id="btn-export" disabled>게임 파일 하나로 받기 (.html)</button>
-    <button class="sub" id="btn-export-js" disabled>폴더용 파일 받기 (settings.js, story.js)</button>
-    <span class="said" id="said-export"></span>
-  </div>
-  <div class="note">
-    <b>받은 게임 파일(.html)은</b> 두 번 누르면 바로 열립니다. 학생에게는 이 파일을 학급 게시판이나 메신저로 나눠 주거나, 누리집에 올려 주소로 알려 주세요. (자세한 방법: <code>docs/학생에게_나눠주기.md</code>)<br>
-    나중에 고치려면 그 파일을 ③의 [파일에서 불러오기]로 다시 불러오면 됩니다. 넣은 그림도 함께 돌아옵니다.
-  </div>
+  <div class="btns"><span class="said" id="said-export"></span></div>
+  <ul class="tips">
+    <li>받은 파일은 학급 게시판이나 메신저로 나눠 주거나, 누리집에 올려 주소로 알려 주세요. (자세한 방법: <code>docs/학생에게_나눠주기.md</code>)</li>
+    <li>나중에 고치려면 그 파일을 3단계의 [파일에서 불러오기]로 다시 불러오면 됩니다. 넣은 그림도 함께 돌아옵니다.</li>
+  </ul>
 </section>
 
-<footer id="foot"></footer>
 </main>
+
+<div class="bar"><div class="in">
+  <button class="sub" id="btn-prev" type="button">← 이전</button>
+  <span class="hint" id="bar-hint" aria-live="polite"></span>
+  <button id="btn-next" type="button">다음 →</button>
+</div></div>
 <iframe id="autoframe" class="hidden" title="자동 실행 점검" aria-hidden="true"></iframe>
 
 <script src="engine/js/defaults.js"></script>
@@ -154,7 +364,6 @@
 <script src="engine/js/parse.js"></script>
 <script src="engine/js/export.js"></script>
 <script src="engine/bundle.js"></script>
-<script src="ai/guide.js"></script>
 <script>
 (function () {
   const $ = (s) => document.querySelector(s);
@@ -167,36 +376,123 @@
   const GUIDE = window.KIT_GUIDE, BUNDLE = window.KIT_BUNDLE, D = window.KIT_DEFAULTS;
   if (!GUIDE || !BUNDLE) { document.body.innerHTML = '<p style="padding:24px">필요한 파일(engine/bundle.js, ai/guide.js)을 찾지 못했어요. 키트 폴더를 통째로 받은 뒤 그 안의 maker.html 을 열어 주세요.</p>'; return; }
   const KEY = 'kit-maker-' + GUIDE.판;
-  const S = { form: {}, text: '', data: null, images: {}, audio: {}, errors: 0 };
-  try { const saved = JSON.parse(localStorage.getItem(KEY) || '{}'); S.form = saved.form || {}; S.text = saved.text || ''; } catch (e) {}
-  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify({ form: S.form, text: S.text.length < 800000 ? S.text : '' })); } catch (e) {} };
+  const S = { form: {}, text: '', data: null, images: {}, audio: {}, errors: 0, at: null, gave: false, exported: false };
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; S.form = saved.form || {}; S.text = saved.text || ''; S.gave = !!saved.gave; } catch (e) {}
+  const returning = Object.keys(S.form).length > 0 || !!S.text.trim();
+  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify({ form: S.form, text: S.text.length < 800000 ? S.text : '', at: S.at, gave: S.gave })); } catch (e) {} };
   const say = (id, t) => { const el = $(id); el.textContent = t; if (t) setTimeout(() => { if (el.textContent === t) el.textContent = ''; }, 4000); };
   const download = (name, text, type) => { const a = h('a', { href: URL.createObjectURL(new Blob([text], { type: type || 'text/plain' })), download: name }); document.body.append(a); a.click(); a.remove(); };
   const copy = async (text) => { try { await navigator.clipboard.writeText(text); return true; } catch (e) { const t = h('textarea'); t.value = text; document.body.append(t); t.select(); const ok = document.execCommand('copy'); t.remove(); return ok; } };
 
   $('#edition').textContent = GUIDE.판이름;
-  if (GUIDE.소개) $('#intro').textContent = GUIDE.소개 + ' 설계를 적으면 AI에게 줄 글을 만들어 주고, AI가 써 준 게임을 점검해서 파일 하나로 내보냅니다.';
-  $('#foot').textContent = '법정 추리 수업 게임 키트 · ' + GUIDE.판이름;
+  $('#intro').textContent = GUIDE.소개 || '';
+  $('#foot').textContent = '법정 추리 수업 게임 키트 ' + GUIDE.판이름 + ' · 원작 「기억의 법정」 BONSSAM · CC BY-NC-SA 4.0';
+
+  // ─────────── 단계 넘기기 ───────────
+  // 사용법 → 1(설계서, 여러 쪽) → 2 → 3 → 4 → 5. 화면 아래 [다음]으로 넘기고, 위의 단계 이름을 눌러 바로 갈 수도 있다
+  const fields = GUIDE.설계서;
+  const groups = (() => {
+    const byId = Object.fromEntries(fields.map((f) => [f.id, f]));
+    const gs = (GUIDE.쪽 || []).map((g) => ({ 이름: g.이름, 설명: g.설명 || '', 칸: (g.칸 || []).map((id) => byId[id]).filter(Boolean) })).filter((g) => g.칸.length);
+    const used = new Set(gs.flatMap((g) => g.칸.map((f) => f.id)));
+    const rest = fields.filter((f) => !used.has(f.id));
+    if (!gs.length) for (let i = 0; i < rest.length; i += 5) gs.push({ 이름: '설계서 ' + (gs.length + 1), 설명: '', 칸: rest.slice(i, i + 5) });
+    else if (rest.length) gs[gs.length - 1].칸.push(...rest);
+    return gs;
+  })();
+  const missing = () => fields.filter((f) => f.필수 && !String(S.form[f.id] || '').trim());
+  const NEXT_NAME = { 2: 'AI에게 주기', 3: '답 넣고 점검', 4: '그림 넣기', 5: '해 보기' };
+
+  function go(step, sub) {
+    if (step !== 'guide') step = Math.min(5, Math.max(1, Number(step) || 1));
+    sub = step === 1 ? Math.min(groups.length - 1, Math.max(0, Number(sub) || 0)) : 0;
+    S.at = { step, sub };
+    document.querySelectorAll('main > .page').forEach((p) => p.classList.toggle('hidden', p.dataset.step !== String(step)));
+    if (step === 1) {
+      const g = groups[sub];
+      $('#sub-no').textContent = groups.length > 1 ? '· ' + (sub + 1) + ' / ' + groups.length : '';
+      $('#sub-title').textContent = g.이름;
+      $('#sub-desc').textContent = g.설명;
+      document.querySelectorAll('#form .fpage').forEach((p, i) => p.classList.toggle('hidden', i !== sub));
+      renderSubtabs();
+    }
+    if (step === 2) makePrompt();
+    if (step === 5) updateButtons();
+    refreshNav(); persist();
+    // 주소 끝(#step-3 등)으로 단계를 기억한다. 칸의 id와 겹치지 않는 이름이어야 브라우저가 멋대로 내려가지 않는다
+    try { history.replaceState(null, '', '#' + (step === 'guide' ? 'how' : 'step-' + step)); } catch (e) {}
+    window.scrollTo(0, 0);
+  }
+  const next = () => { const { step, sub } = S.at; if (step === 'guide') go(1, 0); else if (step === 1 && sub < groups.length - 1) go(1, sub + 1); else if (step < 5) go(step + 1); };
+  const prev = () => { const { step, sub } = S.at; if (step === 1 && sub > 0) go(1, sub - 1); else if (step === 1) go('guide'); else if (step === 2) go(1, groups.length - 1); else if (step !== 'guide') go(step - 1); };
+
+  function refreshNav() {
+    if (!S.at) return;
+    const { step, sub } = S.at;
+    const miss = missing().length;
+    const done = { 1: !miss, 2: S.gave, 3: !!S.data && !S.errors, 4: Object.keys(S.images).length > 0, 5: S.exported };
+    document.querySelectorAll('#steps [data-go]').forEach((b) => {
+      const n = +b.dataset.go, cur = n === step;
+      if (cur) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      b.classList.toggle('done', !!done[n] && !cur);
+      b.querySelector('.n').textContent = done[n] && !cur ? '✓' : n;
+    });
+    const pb = $('#btn-prev'), nb = $('#btn-next');
+    pb.classList.toggle('gap', step === 'guide');
+    pb.textContent = step === 1 && sub === 0 ? '← 사용법' : '← 이전';
+    nb.classList.toggle('gap', step === 5);
+    nb.textContent = step === 'guide' ? '시작하기 →' : step === 1 && sub < groups.length - 1 ? '다음 →' : step < 5 ? '다음: ' + NEXT_NAME[step + 1] + ' →' : '';
+    $('#bar-hint').textContent = step === 'guide' ? '다섯 단계로 만듭니다'
+      : step === 1 ? (miss ? '필수 칸 ' + miss + '개가 비어 있어요' : '필수 칸을 모두 채웠어요')
+      : step === 2 ? (S.gave ? 'AI가 데이터를 다 쓰면 다음으로' : '글을 복사해 AI에게 붙여 넣으세요')
+      : step === 3 ? (!S.data ? 'AI의 답을 붙여 넣고 점검하세요' : S.errors ? '오류를 고쳐야 해 볼 수 있어요' : '점검을 통과했어요')
+      : step === 4 ? '그림은 넣지 않아도 됩니다' : '';
+  }
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) go(+b.dataset.go); });
+  $('#btn-next').addEventListener('click', next);
+  $('#btn-prev').addEventListener('click', prev);
+  $('#btn-guide').addEventListener('click', () => go('guide'));
+  $('#btn-start').addEventListener('click', () => go(1, 0));
 
   // ─────────── ① 설계서 ───────────
-  const fields = GUIDE.설계서;
+  function fieldEl(f) {
+    const id = 'f-' + f.id;
+    const isChecks = f.종류 === 'checks';
+    const name = h(isChecks ? 'span' : 'label', { class: 'l', for: isChecks ? null : id }, f.이름, f.필수 ? h('span', { class: 'req' }, '필수') : null);
+    const help = f.도움말 ? h('p', { class: 'help', id: 'h-' + f.id }, f.도움말) : null;
+    let input;
+    if (f.종류 === 'select') { input = h('select', { id }, f.보기.map((o) => h('option', { value: o }, o))); input.value = S.form[f.id] || f.보기[0]; S.form[f.id] = input.value; }
+    else if (isChecks) {
+      const cur = S.form[f.id] || (S.form[f.id] = f.보기.slice());
+      input = h('div', { class: 'optlist', id, role: 'group', 'aria-label': f.이름 }, f.보기.map((o) => { const c = h('input', { type: 'checkbox' }); c.checked = cur.includes(o); c.addEventListener('change', () => { S.form[f.id] = f.보기.filter((x) => (x === o ? c.checked : S.form[f.id].includes(x))); persist(); }); return h('label', {}, c, h('span', {}, o)); }));
+    } else { input = h(f.종류 === 'textarea' ? 'textarea' : 'input', { id, type: f.종류 === 'textarea' ? null : 'text', placeholder: f.예시 ? '예: ' + f.예시.split('\n')[0] : '' }); input.value = S.form[f.id] || ''; }
+    if (help) input.setAttribute('aria-describedby', 'h-' + f.id);
+    if (!isChecks) input.addEventListener('input', () => { S.form[f.id] = input.value; persist(); refreshNav(); });
+    return h('div', { class: 'fld' + (f.종류 === 'textarea' || isChecks ? ' wide' : '') }, name, help, input);
+  }
   function renderForm() {
+    const cur = S.at && S.at.step === 1 ? S.at.sub : 0;
     const box = $('#form');
     box.innerHTML = '';
-    for (const f of fields) {
-      const lab = h('label', { class: 'f', for: 'f-' + f.id }, f.이름, f.필수 ? h('span', { class: 'req' }, '*') : null, f.도움말 ? h('span', { class: 'help' }, f.도움말) : null);
-      let input;
-      if (f.종류 === 'select') { input = h('select', { id: 'f-' + f.id }, f.보기.map((o) => h('option', { value: o }, o))); input.value = S.form[f.id] || f.보기[0]; S.form[f.id] = input.value; }
-      else if (f.종류 === 'checks') {
-        const cur = S.form[f.id] || (S.form[f.id] = f.보기.slice());
-        input = h('div', { class: 'checks', id: 'f-' + f.id }, f.보기.map((o) => { const c = h('input', { type: 'checkbox' }); c.checked = cur.includes(o); c.addEventListener('change', () => { S.form[f.id] = f.보기.filter((x) => (x === o ? c.checked : S.form[f.id].includes(x))); persist(); }); return h('label', {}, c, o); }));
-      } else { input = h(f.종류 === 'textarea' ? 'textarea' : 'input', { id: 'f-' + f.id, type: f.종류 === 'textarea' ? null : 'text', placeholder: f.예시 ? '예: ' + f.예시.split('\n')[0] : '' }); input.value = S.form[f.id] || ''; }
-      if (f.종류 !== 'checks') input.addEventListener('input', () => { S.form[f.id] = input.value; persist(); });
-      box.append(lab, input);
-    }
+    groups.forEach((g, i) => box.append(h('div', { class: 'fpage' + (i === cur ? '' : ' hidden') }, g.칸.map(fieldEl))));
   }
-  $('#btn-example').addEventListener('click', () => { for (const f of fields) if (f.예시) S.form[f.id] = f.예시; renderForm(); persist(); });
-  $('#btn-clear').addEventListener('click', () => { if (!confirm('설계서에 쓴 내용을 모두 지울까요?')) return; S.form = {}; renderForm(); persist(); });
+  function renderSubtabs() {
+    const box = $('#subtabs');
+    box.innerHTML = '';
+    groups.forEach((g, i) => box.append(h('button', { type: 'button', 'aria-current': i === S.at.sub ? 'true' : null, onclick: () => go(1, i) }, (i + 1) + '. ' + g.이름)));
+    box.append(h('span', { class: 'saved' }, '쓴 내용은 자동으로 저장돼요'));
+  }
+  function fillExample() {
+    const typed = fields.some((f) => (f.종류 === 'text' || f.종류 === 'textarea') && String(S.form[f.id] || '').trim() && S.form[f.id] !== f.예시);
+    if (typed && !confirm('설계서에 쓴 내용을 예시로 바꿀까요?')) return false;
+    for (const f of fields) if (f.예시) S.form[f.id] = f.예시;
+    renderForm(); persist(); refreshNav();
+    return true;
+  }
+  $('#btn-example').addEventListener('click', fillExample);
+  $('#btn-start-example').addEventListener('click', () => { if (fillExample()) go(1, 0); });
+  $('#btn-clear').addEventListener('click', () => { if (!confirm('설계서에 쓴 내용을 모두 지울까요?')) return; S.form = {}; renderForm(); persist(); refreshNav(); });
   renderForm();
 
   // ─────────── ② AI에게 줄 글 ───────────
@@ -212,22 +508,39 @@
       '', '---', '', '# 수업 설계서 (선생님이 쓴 것)', '', sheet, '',
     ].join('\n');
   }
-  $('#btn-prompt').addEventListener('click', () => {
-    const miss = fields.filter((f) => f.필수 && !String(S.form[f.id] || '').trim());
+  const sizeText = (n) => (n >= 10000 ? '약 ' + Math.round(n / 1000) / 10 + '만 자' : '약 ' + Math.max(1, Math.round(n / 1000)) + '천 자');
+  function makePrompt() {
     const p = $('#prompt');
     p.value = buildPrompt();
-    p.classList.remove('hidden');
-    $('#btn-copy').disabled = $('#btn-save-prompt').disabled = false;
-    say('#said-prompt', miss.length ? '만들었어요. (비어 있는 칸: ' + miss.map((f) => f.이름).join(', ') + ' → AI가 물어볼 수 있어요)' : '만들었어요. [복사하기]를 눌러 AI에게 붙여 넣으세요. (약 ' + Math.round(p.value.length / 1000) + '천 자)');
-  });
-  $('#btn-copy').addEventListener('click', async () => say('#said-prompt', (await copy($('#prompt').value)) ? '복사했어요! AI 대화창에 붙여 넣으세요.' : '복사하지 못했어요. 글을 직접 골라 복사해 주세요.'));
-  $('#btn-save-prompt').addEventListener('click', () => download('ai-prompt.md', $('#prompt').value, 'text/markdown'));
+    $('#prompt-size').textContent = sizeText(p.value.length) + ' · 설계서, AI 지침, 데이터 형식' + ($('#opt-sample').checked ? ', 예시 게임' : '');
+    const miss = missing(), box = $('#prompt-miss');
+    box.innerHTML = '';
+    box.classList.toggle('hidden', !miss.length);
+    if (miss.length) box.append('비어 있는 필수 칸: ' + miss.map((f) => f.이름).join(', ') + '. 이대로 보내면 AI가 물어보거나 알아서 정합니다.',
+      h('button', { class: 'sub small', type: 'button', onclick: () => go(1, Math.max(0, groups.findIndex((g) => g.칸.includes(miss[0])))) }, '채우러 가기'));
+    const items = $('#opt-plan').checked ? [
+      ['AI', '사건 설계안을 보여 줍니다', '고칠 점은 말로 하면 됩니다. 예: "증인을 한 명 더 넣어 줘", "대사를 더 쉽게 써 줘"'],
+      ['선생님', '"좋아, 데이터로 써 줘"', '설계안이 마음에 들면 이렇게 말합니다. AI가 게임 데이터를 씁니다.'],
+      ['선생님', '데이터를 통째로 복사', [h('code', {}, 'DATA.게임'), ' 부터 끝까지 복사한 뒤 아래 [다음]을 누릅니다.']],
+    ] : [
+      ['AI', '바로 게임 데이터를 씁니다', '설계서의 빈칸은 AI가 알아서 정합니다.'],
+      ['선생님', '데이터를 통째로 복사', [h('code', {}, 'DATA.게임'), ' 부터 끝까지 복사한 뒤 아래 [다음]을 누릅니다.']],
+      ['선생님', '고치고 싶으면 말로', '예: "두 번째 증언이 너무 쉬워". 고친 뒤에는 전체를 다시 받습니다.'],
+    ];
+    $('#flow').replaceChildren(...items.map(([who, t, d], i) => h('li', {}, h('span', { class: 'k' }, (i + 1) + ' · ' + who), h('b', {}, t), d)));
+  }
+  const gave = () => { S.gave = true; persist(); refreshNav(); };
+  $('#opt-plan').addEventListener('change', makePrompt);
+  $('#opt-sample').addEventListener('change', makePrompt);
+  $('#btn-copy').addEventListener('click', async () => { const ok = await copy($('#prompt').value); if (ok) gave(); say('#said-prompt', ok ? '복사했어요! AI 대화창에 붙여 넣으세요.' : '복사하지 못했어요. [글 내용 보기]를 열어 직접 복사해 주세요.'); });
+  $('#btn-save-prompt').addEventListener('click', () => { download('ai-prompt.md', $('#prompt').value, 'text/markdown'); gave(); });
 
   // ─────────── ③ 점검 ───────────
   const paste = $('#paste');
   paste.value = S.text;
   paste.addEventListener('input', () => { S.text = paste.value; persist(); });
-  const issueEl = (cls, title, text, help, code) => h('div', { class: 'issue ' + cls }, h('b', {}, title), text, help ? h('small', {}, '→ ' + help) : null, code ? h('code', {}, code) : null);
+  const issueEl = (cls, title, text, help, code) => h('div', { class: 'issue ' + cls }, h('i', { class: 'dot', 'aria-hidden': 'true' }),
+    h('div', { class: 'tx' }, h('b', {}, title), text ? h('span', {}, text) : null, help ? h('small', {}, '→ ' + help) : null, code ? h('code', {}, code) : null));
   const walk = (list, fn) => { for (const c of D.list(list)) { if (!c || typeof c !== 'object') continue; fn(c); for (const v of Object.values(c)) { if (Array.isArray(v)) walk(v.filter((x) => x && typeof x === 'object' && !Array.isArray(x)), fn); else if (v && typeof v === 'object') for (const vv of Object.values(v)) if (Array.isArray(vv)) walk(vv.filter((x) => x && typeof x === 'object'), fn); } } };
   const episodes = (data) => Object.entries(data || {}).filter(([, d]) => d && Array.isArray(d.막)).sort((a, b) => (a[1].번호 || 0) - (b[1].번호 || 0));
 
@@ -243,7 +556,7 @@
       box.innerHTML = '';
       box.append(h('div', { class: 'issues' }, r.errors.map((e) => issueEl('err', '글을 읽지 못했어요', e.글, e.도움, e.보기 ? e.줄 + '번째 줄:  ' + e.보기.trim() : null))));
       const msg = '네가 써 준 데이터를 읽다가 문제가 생겼어. 고쳐서 전체 데이터를 다시 써 줘.\n\n' + r.errors.map((e) => '- ' + e.글 + (e.보기 ? '\n  (그 줄: ' + e.보기.trim() + ')' : '')).join('\n');
-      box.append(h('div', { class: 'btns' }, h('button', { class: 'sub', onclick: async () => say('#said-check', (await copy(msg)) ? 'AI에게 보낼 글을 복사했어요.' : '복사하지 못했어요.') }, 'AI에게 보낼 수정 요청 복사')));
+      box.append(h('div', { class: 'btns' }, h('button', { class: 'sub', type: 'button', onclick: async () => say('#said-check', (await copy(msg)) ? 'AI에게 보낼 글을 복사했어요.' : '복사하지 못했어요.') }, 'AI에게 보낼 수정 요청 복사')));
       updateButtons(); renderImages();
       return;
     }
@@ -260,9 +573,9 @@
     const eps = episodes(data);
     let lines = 0, tests = 0, ev = 0;
     eps.forEach(([, e]) => { ev += Object.keys(e.증거 || {}).length; walk(e.막.flatMap((m) => D.list(m.내용)), (c) => { if (c.말 !== undefined && c.대사 !== undefined) lines++; if (c.증언) tests++; if (c.글 && c.추궁) lines++; }); });
-    box.append(h('div', { class: 'stat' },
-      h('span', {}, '제목: ' + ((data.게임 || {}).제목 || '(없음)')), h('span', {}, '화 ' + eps.length + '개'), h('span', {}, '인물 ' + Object.keys((data.게임 || {}).인물 || {}).length + '명'),
-      h('span', {}, '증거 ' + ev + '개'), h('span', {}, '증언 ' + tests + '개'), h('span', {}, '대사 약 ' + lines + '줄'), h('span', {}, '예상 시간 약 ' + Math.max(5, Math.round(lines * 7 / 60 / 5) * 5) + '분')));
+    box.append(h('p', { class: 'gt' }, '「' + ((data.게임 || {}).제목 || '제목 없음') + '」'),
+      h('div', { class: 'stat' }, [['화', eps.length + '개'], ['인물', Object.keys((data.게임 || {}).인물 || {}).length + '명'], ['증거', ev + '개'], ['증언', tests + '개'], ['대사', '약 ' + lines + '줄'], ['예상 시간', '약 ' + Math.max(5, Math.round(lines * 7 / 60 / 5) * 5) + '분']]
+        .map(([k, v]) => h('div', {}, h('b', {}, v), h('small', {}, k)))));
     const list = h('div', { class: 'issues' });
     if (!n('오류') && !n('주의')) list.append(issueEl('ok', '문제를 찾지 못했어요', '바로 해 볼 수 있습니다. 아래에서 끝까지 자동으로 실행해 본 결과도 확인하세요.'));
     else list.append(issueEl(n('오류') ? 'err' : 'warn', '오류 ' + n('오류') + '개, 주의 ' + n('주의') + '개', n('오류') ? '오류는 꼭 고쳐야 합니다. 아래 [AI에게 보낼 수정 요청 복사]를 눌러 AI에게 붙여 넣으세요.' : '주의는 실행은 되지만 뜻한 대로 보이지 않을 수 있는 것입니다.'));
@@ -270,14 +583,14 @@
     box.append(list);
     const auto = h('div', { class: 'issues' });
     box.append(auto);
-    const notes = issues.filter((i) => i.수준 === '참고');
-    if (notes.length) box.append(h('details', {}, h('summary', {}, '참고 ' + notes.length + '개 (더 좋게 만들 수 있는 것)'), h('div', { class: 'issues' }, notes.map((i) => issueEl('', i.곳, i.글, i.도움)))));
-    const facts = eps.flatMap(([, e]) => D.list(e.사실확인).map((t) => '제' + e.번호 + '화: ' + t));
-    if (facts.length) box.append(h('details', { open: true }, h('summary', {}, '선생님이 확인할 사실 ' + facts.length + '개 (AI가 쓴 내용이 맞는지 꼭 확인하세요)'), h('div', { class: 'checks' }, facts.map((t) => h('label', {}, h('input', { type: 'checkbox' }), t)))));
-    else box.append(h('div', { class: 'note warn' }, 'AI가 「사실확인」 목록을 쓰지 않았어요. AI가 지어낸 내용이 섞일 수 있으니, 교과 내용이 맞는지 직접 읽어 확인해 주세요.'));
     const fixMsg = () => '내 게임 데이터를 점검했더니 아래 문제가 나왔어. 문제를 고쳐서 DATA.게임 과 DATA.ep1 전체를 다시 써 줘. (줄이지 말고 통째로)\n\n'
       + issues.filter((i) => i.수준 !== '참고').map((i) => '[' + i.수준 + '] ' + i.곳 + ': ' + i.글 + (i.도움 ? ' → ' + i.도움 : '')).join('\n') + (S.autoMsg ? '\n' + S.autoMsg : '');
-    if (n('오류') || n('주의')) box.append(h('div', { class: 'btns' }, h('button', { class: 'sub', onclick: async () => say('#said-check', (await copy(fixMsg())) ? 'AI에게 보낼 글을 복사했어요.' : '복사하지 못했어요.') }, 'AI에게 보낼 수정 요청 복사')));
+    if (n('오류') || n('주의')) box.append(h('div', { class: 'btns' }, h('button', { class: 'sub', type: 'button', onclick: async () => say('#said-check', (await copy(fixMsg())) ? 'AI에게 보낼 글을 복사했어요.' : '복사하지 못했어요.') }, 'AI에게 보낼 수정 요청 복사')));
+    const facts = eps.flatMap(([, e]) => D.list(e.사실확인).map((t) => '제' + e.번호 + '화: ' + t));
+    if (facts.length) box.append(h('details', { open: true }, h('summary', {}, '선생님이 확인할 사실 ' + facts.length + '개 (AI가 쓴 내용이 맞는지 꼭 확인하세요)'), h('div', { class: 'checks' }, facts.map((t) => h('label', {}, h('input', { type: 'checkbox' }), h('span', {}, t))))));
+    else box.append(h('div', { class: 'note warn' }, 'AI가 「사실확인」 목록을 쓰지 않았어요. AI가 지어낸 내용이 섞일 수 있으니, 교과 내용이 맞는지 직접 읽어 확인해 주세요.'));
+    const notes = issues.filter((i) => i.수준 === '참고');
+    if (notes.length) box.append(h('details', {}, h('summary', {}, '참고 ' + notes.length + '개 (더 좋게 만들 수 있는 것)'), h('div', { class: 'issues' }, notes.map((i) => issueEl('', i.곳, i.글, i.도움)))));
     updateButtons();
     S.autoMsg = '';
     if (!n('오류')) autoRun(auto);
@@ -298,7 +611,7 @@
     const onMsg = (e) => { if (e.data && e.data.kitAuto) done(e.data.kitAuto); };
     window.addEventListener('message', onMsg);
     clearTimeout(autoTimer);
-    autoTimer = setTimeout(() => done({ ok: false, 문제: [{ 글: '40초 안에 끝나지 않았어요. 어딘가에서 멈춘 것 같아요. [새 창에서 해 보기]로 직접 확인해 주세요.' }] }), 40000);
+    autoTimer = setTimeout(() => done({ ok: false, 문제: [{ 글: '40초 안에 끝나지 않았어요. 어딘가에서 멈춘 것 같아요. 5단계의 [새 창에서 해 보기]로 직접 확인해 주세요.' }] }), 40000);
     frame.classList.remove('hidden');
     frame.srcdoc = window.KIT_EXPORT({ bundle: BUNDLE, data: S.data, images: {}, audio: {}, flags: ['auto'] });
   }
@@ -365,8 +678,8 @@
     const put = async (file) => { if (!file || !/^image\//.test(file.type)) return; try { S.images[s.key] = await fileToDataUrl(file, s.max); draw(); } catch (e) { alert(e.message); } };
     const input = h('input', { type: 'file', accept: 'image/*', class: 'hidden' });
     input.addEventListener('change', () => { put(input.files[0]); input.value = ''; });
-    const del = h('button', { class: 'sub small', onclick: () => { delete S.images[s.key]; draw(); } }, '지우기');
-    const el = h('div', { class: 'slot' + (s.wide ? ' wide' : ''), title: s.key }, pic, h('b', {}, s.이름), h('div', { class: 'row' }, h('button', { class: 'small', onclick: () => input.click() }, '고르기'), del), input);
+    const del = h('button', { class: 'sub small', type: 'button', onclick: () => { delete S.images[s.key]; draw(); } }, '지우기');
+    const el = h('div', { class: 'slot' + (s.wide ? ' wide' : ''), title: s.key }, pic, h('b', {}, s.이름), h('div', { class: 'row' }, h('button', { class: 'small', type: 'button', onclick: () => input.click() }, '고르기'), del), input);
     el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('drag'); });
     el.addEventListener('dragleave', () => el.classList.remove('drag'));
     el.addEventListener('drop', (e) => { e.preventDefault(); el.classList.remove('drag'); put(e.dataTransfer.files[0]); });
@@ -374,6 +687,7 @@
     return el;
   }
   function sizeNote() {
+    refreshNav();
     const el = $('#img-size');
     if (!el) return;
     const bytes = Object.values(S.images).reduce((a, v) => a + v.length * 0.75, 0);
@@ -392,11 +706,11 @@
   function renderImages() {
     const box = $('#images');
     box.innerHTML = '';
-    if (!S.data) { box.append(h('div', { class: 'note' }, '먼저 ③에서 점검을 해 주세요.')); return; }
+    if (!S.data) { box.append(h('div', { class: 'note' }, '먼저 3단계에서 AI의 답을 점검해 주세요. 그러면 필요한 그림 칸이 나옵니다. ', h('button', { class: 'sub small', type: 'button', 'data-go': '3' }, '3단계로 가기'))); refreshNav(); return; }
     const sl = imageSlots();
     const group = (title, list, open) => h('details', { open: open || null }, h('summary', {}, title + ' (' + list.length + ')'), h('div', { class: 'slots' }, list.map(slotEl)));
     box.append(
-      h('div', { class: 'btns' }, h('button', { class: 'sub', onclick: async () => say('#said-img', (await copy(orderText(sl))) ? '그림 주문서를 복사했어요. 그림을 그려 주는 AI에게 붙여 넣으세요.' : '복사하지 못했어요.') }, '그림 주문서 복사 (그림 AI에게 줄 글)'), h('span', { class: 'said', id: 'said-img' })),
+      h('div', { class: 'btns' }, h('button', { class: 'sub', type: 'button', onclick: async () => say('#said-img', (await copy(orderText(sl))) ? '그림 주문서를 복사했어요. 그림을 그려 주는 AI에게 붙여 넣으세요.' : '복사하지 못했어요.') }, '그림 주문서 복사 (그림 AI에게 줄 글)'), h('span', { class: 'said', id: 'said-img' })),
       group('인물', sl.chars, true), group('배경', sl.bgs, true), group('증거', sl.evs), group('법정 자리 그림 (없으면 기본 그림)', sl.court),
       h('div', { class: 'note', id: 'img-size' }),
       h('div', { class: 'note warn' }, '그림은 내가 그렸거나, 쓸 수 있다고 허락받은 것만 넣으세요. 인터넷에서 찾은 그림, 교과서 그림, 다른 게임이나 만화의 그림은 저작권 문제가 생길 수 있습니다. (docs/그림_넣기.md)'));
@@ -407,22 +721,35 @@
   function updateButtons() {
     const ok = !!S.data && !S.errors;
     for (const id of ['#btn-play', '#btn-play-teacher', '#btn-export', '#btn-export-js']) $(id).disabled = !ok;
+    $('#need-check').classList.toggle('hidden', ok);
+    refreshNav();
   }
   const htmlOf = (flags) => window.KIT_EXPORT({ bundle: BUNDLE, data: S.data, images: S.images, audio: S.audio, flags });
   // 파일 이름은 영어로 (한글 이름은 기기에 따라 깨지거나 주소로 쓰기 불편하다). 설정의 아이디를 쓴다
   const fileName = () => (String((S.data.게임 || {}).아이디 || '').replace(/[^A-Za-z0-9_-]+/g, '') || 'my-game');
   const open = (flags) => { const w = window.open(URL.createObjectURL(new Blob([htmlOf(flags)], { type: 'text/html' })), '_blank'); if (!w) alert('새 창이 막혔어요. 브라우저의 팝업 차단을 풀거나, [게임 파일 하나로 받기]로 받아서 열어 주세요.'); };
+  const exported = () => { S.exported = true; refreshNav(); };
   $('#btn-play').addEventListener('click', () => open([]));
   $('#btn-play-teacher').addEventListener('click', () => open(['teacher']));
-  $('#btn-export').addEventListener('click', () => { download(fileName() + '.html', htmlOf([]), 'text/html'); say('#said-export', '받았어요. 내려받은 파일을 두 번 누르면 게임이 열려요.'); });
+  $('#btn-export').addEventListener('click', () => { download(fileName() + '.html', htmlOf([]), 'text/html'); exported(); say('#said-export', '받았어요. 내려받은 파일을 두 번 누르면 게임이 열려요.'); });
   $('#btn-export-js').addEventListener('click', () => {
     const s = window.KIT_STRINGIFY(S.data);
     if (s.settings) download('settings.js', s.settings, 'text/javascript');
     s.stories.forEach((st, i) => setTimeout(() => download('story' + (st.번호 || i + 1) + '.js', st.text, 'text/javascript'), 300 * (i + 1)));
+    exported();
     say('#said-export', '받은 파일을 키트의 my-game 폴더에 넣으세요 (있던 파일을 바꿉니다).');
   });
 
-  window.KIT_MAKER = { S, runCheck, buildPrompt, imageSlots, htmlOf }; // 시험용
+  window.KIT_MAKER = { S, runCheck, buildPrompt, imageSlots, htmlOf, go }; // 시험용
+
+  // 처음 연 사람은 사용법부터, 쓰던 사람은 하던 단계부터
+  const hash = location.hash.match(/^#step-([1-5])$/);
+  const at = saved.at;
+  if (hash) go(+hash[1]);
+  else if (location.hash === '#how') go('guide');
+  else if (at && (at.step === 'guide' || [1, 2, 3, 4, 5].includes(at.step))) go(at.step, at.sub);
+  else go(returning ? 1 : 'guide');
+  renderImages(); updateButtons();
   if (S.text.trim()) runCheck();
 })();
 </script>

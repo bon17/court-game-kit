@@ -32,7 +32,7 @@
 
   const count = (t) => String(t || '').replace(/\s/g, '').length;
 
-  G.writing = (spec, opts = {}) => new Promise((finish) => {
+  G.writing = (spec) => new Promise((finish) => {
     if (G.auto) { finish(); return; }
     G.box.hide();
     const items = G.list(spec.문항).filter((q) => q && (q.질문 || q.메시지));
@@ -60,7 +60,7 @@
     function intro() {
       const box = h('div', { class: 'intro' });
       G.list(spec.안내).forEach((t) => box.append(q(t, 'p')));
-      page(box, row(opts.바로 ? btn('돌아가기', () => { scr.remove(); finish(); }, 'ui-btn sub') : null, btn('시작하기', fields.length ? start : () => step(0))));
+      page(box, row(btn('시작하기', fields.length ? start : () => step(0))));
     }
 
     // 학생 정보 (설정의 학생정보: ['반', '번호', '이름']. 비우면 묻지 않는다)

@@ -10,7 +10,7 @@
   --point: #ffb13b;      /* 〔추궁할 낱말〕 */
   --hl: #ffd76a;         /* **강조** */
   --thought: #9fd6ff;    /* (속마음) */
-  --font: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+  --font: "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif;
 }
 
 * { box-sizing: border-box; }
