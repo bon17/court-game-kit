@@ -89,12 +89,16 @@
     root.setProperty('--font', FONTS[font]);
     root.setProperty('--title-font', TITLE_FONTS[tf] || FONTS[tf]);
     // 글꼴 파일은 인터넷에서 받는다 (기다리지 않고 받는 대로 바뀐다. 못 받으면 기기 글꼴)
+    const loads = [];
     for (const href of [FONT_FILES[font], TITLE_FONT_FILES[tf] || FONT_FILES[tf]]) {
       if (!href || [...document.querySelectorAll('link[data-kit-font]')].some((l) => l.href === href)) continue;
       const link = document.createElement('link');
       link.rel = 'stylesheet'; link.href = href; link.setAttribute('data-kit-font', '');
+      loads.push(new Promise((ok) => { link.onload = link.onerror = ok; }));
       document.head.append(link);
     }
+    // 글꼴 목록(CSS)을 받을 때까지 (인터넷이 없으면 곧 끝난다. 길어도 2.5초)
+    G.fontsReady = Promise.race([Promise.all(loads), new Promise((ok) => setTimeout(ok, 2500))]);
     for (const [k, v] of Object.entries(C.기록종류)) root.setProperty('--k-' + G.kindKey(k), v.색 || '#e8b84a');
     document.title = C.제목;
     STORE = 'kit-' + (C.아이디 || C.제목).replace(/\s+/g, '_');
@@ -153,7 +157,7 @@
       if (who) { const d = await findImg('characters/' + who.파일 + '_default'); if (d) return d; }
     }
     G.missing.add(key);
-    return G.placeholder(key);
+    return (await placeholderWithText(key)) || G.placeholder(key);
   };
 
   // ─────────── 자리 그림 (그림이 없을 때) ───────────
@@ -268,9 +272,13 @@
       <circle cx="512" cy="270" r="180" fill="#ffd66e" stroke="rgba(0,0,0,.35)" stroke-width="8"/>
       <text x="512" y="270" ${EMOJI} font-size="368" text-anchor="middle" dominant-baseline="central">${EXPR_EMOJI[e] || EXPR_EMOJI.default}</text>${badge}</svg>`;
   }
-  function charPlaceholder(file) {
+  function charOf(file) {
     let name = file, c = {}, e = 'default';
     for (const [n, cc] of Object.entries(G.cfg.인물)) if (file.startsWith(cc.파일 + '_') || file === cc.파일) { name = n; c = cc; e = file.slice(cc.파일.length + 1) || 'default'; }
+    return { name, c, e };
+  }
+  function charPlaceholder(file, withText = true) {
+    const { name, c, e } = charOf(file);
     const color = hex(c.색) ? c.색 : nameColor(name);
     const mode = G.cfg.자리그림;
     if (mode === '이모지' && e !== 'back') return emojiPerson(name, c, e, color);
@@ -295,7 +303,7 @@
         p.push(drawFace(e));
         if (lk.glasses) p.push(`<g fill="rgba(255,255,255,.18)" stroke="${INK}" stroke-width="7"><rect x="414" y="306" width="88" height="66" rx="22"/><rect x="522" y="306" width="88" height="66" rx="22"/></g><path d="M502 330 Q512 322 522 330" fill="none" stroke="${INK}" stroke-width="7"/>`);
         if (lk.beard) p.push(`<path d="M430 420 C450 500 574 500 594 420 C570 452 454 452 430 420 Z" fill="${hairC}" opacity=".9"/>`);
-      } else p.push(`<rect x="332" y="700" width="360" height="84" rx="42" fill="rgba(8,12,26,.72)"/><text x="512" y="744" ${FONT} font-size="${name.length > 5 ? 40 : 50}" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${esc(name)}</text>`);
+      } else p.push(`<rect x="332" y="700" width="360" height="84" rx="42" fill="rgba(8,12,26,.72)"/>` + (withText ? `<text x="512" y="744" ${FONT} font-size="${name.length > 5 ? 40 : 50}" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${esc(name)}</text>` : ''));
     }
     p.push('</g></svg>');
     return p.join('');
@@ -374,7 +382,7 @@
       <rect width="1536" height="1024" fill="url(#v)"/></svg>`;
   }
   // 증거 카드: 위 띠는 기록 종류의 색
-  function evidencePlaceholder(name, icon, color) {
+  function evidencePlaceholder(name, icon, color, withText = true) {
     const size = name.length > 12 ? 42 : name.length > 8 ? 52 : 62;
     return `<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 768 768">
       <defs><linearGradient id="p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8f1df"/><stop offset="1" stop-color="#e9dcbc"/></linearGradient></defs>
@@ -384,7 +392,65 @@
       ${[0, 1, 2].map((i) => `<path d="M140 ${566 + i * 44} L628 ${566 + i * 44}" stroke="#c9b48a" stroke-width="4"/>`).join('')}
       <circle cx="384" cy="300" r="128" fill="#fffaf0" stroke="#c9b48a" stroke-width="6"/>
       <text x="384" y="306" ${EMOJI} font-size="150" text-anchor="middle" dominant-baseline="central">${esc(icon || '📄')}</text>
-      <text x="384" y="500" ${FONT} font-size="${size}" font-weight="700" fill="#3b2a0e" text-anchor="middle">${esc(name)}</text></svg>`;
+      ${withText ? `<text x="384" y="500" ${FONT} font-size="${size}" font-weight="700" fill="#3b2a0e" text-anchor="middle">${esc(name)}</text>` : ''}</svg>`;
+  }
+  function evidenceOf(key, file) {
+    // 지금 하는 화의 증거를 먼저 찾는다. 그림 이름을 적지 않은 증거는 'evidence/증거이름' 으로 찾는다
+    const eps = [G.ep, ...G.episodes()].filter(Boolean);
+    const all = eps.flatMap((d) => Object.entries(d.증거 || {}));
+    const ev = (all.find(([id, e]) => e.그림 === key || e.자세히 === key || (!e.그림 && 'evidence/' + id === key)) || [])[1];
+    const kd = ev && G.kind(ev), kc = kd && kd.색;
+    return { name: ev ? ev.이름 : file, icon: ev && ev.아이콘, color: hex(kc) ? kc : '#3d6fd6' };
+  }
+  // 그림 속 이름을 게임 글꼴로: 그림(SVG) 속 글자는 웹 글꼴을 쓸 수 없어서, 글자 없이 그린 그림을 캔버스에 옮기고
+  // 이름은 화면의 글꼴(--font)로 쓴다. 안 되면 null (그림 속 글자 그대로 쓴다)
+  const madeUrls = new Set(), madeCache = {};
+  G.fontsReady = Promise.resolve();
+  function twoLines(t) {
+    const spaces = [...t].map((ch, i) => (ch === ' ' ? i : -1)).filter((i) => i > 0), mid = t.length / 2;
+    const at = spaces.length ? spaces.sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid))[0] : Math.ceil(mid);
+    return [t.slice(0, at).trim(), t.slice(at).trim()];
+  }
+  async function withGameText(svg, w, h, items) {
+    try {
+      await G.fontsReady;
+      const fam = getComputedStyle(document.documentElement).getPropertyValue('--font').trim() || 'sans-serif';
+      await Promise.all(items.map((it) => document.fonts.load(it.weight + ' ' + it.size + 'px ' + fam).catch(() => {})));
+      const im = new Image();
+      im.src = svgUrl(svg);
+      await im.decode();
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      const x = cv.getContext('2d');
+      x.drawImage(im, 0, 0, w, h);
+      x.textAlign = 'center'; x.textBaseline = 'middle';
+      for (const it of items) {
+        let size = it.size;
+        const setFont = () => { x.font = it.weight + ' ' + size + 'px ' + fam; };
+        setFont();
+        while (x.measureText(it.text).width > it.maxW && size > it.min) { size -= 2; setFont(); }
+        const lines = x.measureText(it.text).width > it.maxW ? twoLines(it.text) : [it.text];
+        x.fillStyle = it.color;
+        lines.forEach((l, i) => x.fillText(l, it.x, it.y + (i - (lines.length - 1) / 2) * size * 1.18));
+      }
+      let out = cv.toDataURL('image/webp', 0.9);
+      if (!out.startsWith('data:image/webp')) out = cv.toDataURL('image/png');
+      madeUrls.add(out);
+      return out;
+    } catch (err) { return null; }
+  }
+  function placeholderWithText(key) {
+    if (key in madeCache) return madeCache[key];
+    const dir = key.slice(0, key.indexOf('/')), file = key.slice(key.indexOf('/') + 1);
+    let job = null;
+    if (dir === 'evidence') {
+      const e = evidenceOf(key, file);
+      job = withGameText(evidencePlaceholder(e.name, e.icon, e.color, false), 768, 768, [{ text: e.name, x: 384, y: 482, size: 62, min: 38, weight: 700, color: '#3b2a0e', maxW: 560 }]);
+    } else if (dir === 'characters' && G.cfg.자리그림 === '실루엣') {
+      const ch = charOf(file);
+      if (ch.e !== 'back') job = withGameText(charPlaceholder(file, false), 1024, 1024, [{ text: ch.name, x: 512, y: 750, size: 54, min: 30, weight: 700, color: '#fff', maxW: 380 }]);
+    }
+    return (madeCache[key] = job);
   }
   G.placeholder = (key) => {
     const [dir, file] = [key.slice(0, key.indexOf('/')), key.slice(key.indexOf('/') + 1)];
@@ -395,19 +461,12 @@
       if (found && found[1].책상 === key) return ''; // 앞그림(책상)은 없으면 그리지 않는다
       return svgUrl(placePlaceholder(found ? found[0] : file, found ? found[1] : {}));
     }
-    if (dir === 'evidence') {
-      // 지금 하는 화의 증거를 먼저 찾는다. 그림 이름을 적지 않은 증거는 'evidence/증거이름' 으로 찾는다
-      const eps = [G.ep, ...G.episodes()].filter(Boolean);
-      const all = eps.flatMap((d) => Object.entries(d.증거 || {}));
-      const ev = (all.find(([id, e]) => e.그림 === key || e.자세히 === key || (!e.그림 && 'evidence/' + id === key)) || [])[1];
-      const kd = ev && G.kind(ev), kc = kd && kd.색;
-      return svgUrl(evidencePlaceholder(ev ? ev.이름 : file, ev && ev.아이콘, hex(kc) ? kc : '#3d6fd6'));
-    }
+    if (dir === 'evidence') { const e = evidenceOf(key, file); return svgUrl(evidencePlaceholder(e.name, e.icon, e.color)); }
     return '';
   };
   // 그림이 없는 장소 배경이면 팻말에 쓸 이름과 이모지를 돌려준다
   G.placeSign = (name, key) => { const b = G.cfg.배경[name]; return b && !b.법정 && key && G.missing.has(key) ? { 이름: name, 이모지: b.이모지 || '' } : null; };
-  G.isPlaceholder = (url) => typeof url === 'string' && url.startsWith('data:image/svg+xml');
+  G.isPlaceholder = (url) => typeof url === 'string' && (url.startsWith('data:image/svg+xml') || madeUrls.has(url));
   G.setImg = async (el, key) => {
     el.dataset.key = key || '';
     if (!key) { el.hidden = true; el.removeAttribute('src'); return; }
