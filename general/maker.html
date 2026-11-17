@@ -161,6 +161,22 @@
   .slot b { display: block; margin-top: 5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .slot .row { display: flex; gap: 4px; justify-content: center; margin-top: 5px; }
 
+  .imgtools { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: flex-end; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); margin-bottom: 12px; }
+  .imgtools .fld { flex: 1 1 300px; }
+  .imgtools .tools-r { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .chk { display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+  .chk input { accent-color: var(--main); }
+  #images > .note { margin: 12px 0 4px; }
+  #images details > .help { margin: 6px 0 0; }
+  .slot .pic { border: 0; padding: 0; font-family: inherit; cursor: pointer; }
+  .slot .pic:hover { outline: 2px solid var(--main); outline-offset: 1px; background-color: transparent; }
+  .slot.done { border-color: var(--ok); }
+  .slot .row .ask { flex: 1; min-width: 0; padding-inline: 4px; }
+  .slot .row .x { flex: none; width: 30px; padding-inline: 0; }
+  .slot.done b::before { content: '✓ '; color: var(--ok); }
+  .toast { position: fixed; left: 50%; bottom: 70px; transform: translate(-50%, 10px); max-width: min(560px, 92vw); background: var(--ink); color: #fff; font-size: 14px; padding: 9px 14px; border-radius: 6px; box-shadow: 0 6px 20px rgba(0, 0, 0, .2); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 20; }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); }
+
   /* 5. 해 보기 · 내보내기 */
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .blk { border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
@@ -211,7 +227,7 @@
     <button type="button" data-go="1"><span class="n">1</span><span class="t">설계서</span></button>
     <button type="button" data-go="2"><span class="n">2</span><span class="t">AI에게 주기</span></button>
     <button type="button" data-go="3"><span class="n">3</span><span class="t">답 넣고 점검</span></button>
-    <button type="button" data-go="4"><span class="n">4</span><span class="t">그림 (선택)</span></button>
+    <button type="button" data-go="4"><span class="n">4</span><span class="t">그림 만들기</span></button>
     <button type="button" data-go="5"><span class="n">5</span><span class="t">해 보기 · 내보내기</span></button>
   </div></nav>
 </div>
@@ -241,7 +257,7 @@
       <li><span class="n">1</span><div><b>설계서 쓰기</b><span class="where">이 화면</span><p>단원, 학습 목표, 학생들이 자주 틀리는 생각을 적습니다. 아는 만큼만 적고 빈칸은 AI에게 맡겨도 됩니다.</p></div></li>
       <li><span class="n">2</span><div><b>AI에게 주기</b><span class="where ai">AI 대화창</span><p>이 화면이 만든 글을 복사해 AI에게 붙여 넣습니다. AI가 사건 설계안을 보여 주면 고칠 점을 말하고, 마음에 들면 "좋아, 데이터로 써 줘"라고 합니다.</p></div></li>
       <li><span class="n">3</span><div><b>답 넣고 점검</b><span class="where">이 화면</span><p>AI가 써 준 데이터를 붙여 넣고 [점검하기]를 누릅니다. 문제가 나오면 수정 요청 글을 복사해 AI에게 다시 줍니다.</p></div></li>
-      <li><span class="n">4</span><div><b>그림 넣기</b><span class="where opt">선택</span><p>그림이 없어도 게임은 됩니다. 그림이 있으면 칸에 끌어다 놓습니다.</p></div></li>
+      <li><span class="n">4</span><div><b>그림 만들기</b><span class="where ai">그림 AI</span><p>그림마다 프롬프트를 복사해 그림 AI에 붙여 넣고, 나온 그림을 칸에 넣습니다. 그림이 없어도 게임은 됩니다.</p></div></li>
       <li><span class="n">5</span><div><b>해 보기 · 내보내기</b><span class="where">이 화면</span><p>직접 끝까지 해 본 뒤 게임 파일 하나(.html)로 받아 학생에게 나눠 줍니다.</p></div></li>
     </ol>
   </div>
@@ -312,9 +328,9 @@
 
 <section class="page hidden" id="s4" data-step="4">
   <div class="head"><div>
-    <p class="kicker">4단계 · 그림 넣기 (선택)</p>
-    <h2>그림이 있으면 칸에 넣으세요</h2>
-    <p class="lead">그림이 없어도 게임은 됩니다 (코드로 그린 인물과 배경으로 나옵니다). 칸에 끌어다 놓거나 [고르기]를 누르세요. 크기는 자동으로 줄여 줍니다.</p>
+    <p class="kicker">4단계 · 그림 만들기</p>
+    <h2>그림 AI로 그림을 만들어 넣으세요</h2>
+    <p class="lead">그림이 없어도 게임은 되지만, 그림을 넣어야 게임이 완성됩니다. 넣은 그림은 5단계에서 받는 게임 파일 하나에 함께 들어갑니다.</p>
   </div></div>
   <div id="images"></div>
 </section>
@@ -357,6 +373,7 @@
   <span class="hint" id="bar-hint" aria-live="polite"></span>
   <button id="btn-next" type="button">다음 →</button>
 </div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <iframe id="autoframe" class="hidden" title="자동 실행 점검" aria-hidden="true"></iframe>
 
 <script src="engine/js/defaults.js"></script>
@@ -376,11 +393,11 @@
   const GUIDE = window.KIT_GUIDE, BUNDLE = window.KIT_BUNDLE, D = window.KIT_DEFAULTS;
   if (!GUIDE || !BUNDLE) { document.body.innerHTML = '<p style="padding:24px">필요한 파일(engine/bundle.js, ai/guide.js)을 찾지 못했어요. 키트 폴더를 통째로 받은 뒤 그 안의 maker.html 을 열어 주세요.</p>'; return; }
   const KEY = 'kit-maker-' + GUIDE.판;
-  const S = { form: {}, text: '', data: null, images: {}, audio: {}, errors: 0, at: null, gave: false, exported: false };
+  const S = { form: {}, text: '', data: null, images: {}, audio: {}, errors: 0, at: null, gave: false, exported: false, style: '', cut: true };
   let saved = {};
-  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; S.form = saved.form || {}; S.text = saved.text || ''; S.gave = !!saved.gave; } catch (e) {}
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; S.form = saved.form || {}; S.text = saved.text || ''; S.gave = !!saved.gave; S.style = saved.style || ''; S.cut = saved.cut !== false; } catch (e) {}
   const returning = Object.keys(S.form).length > 0 || !!S.text.trim();
-  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify({ form: S.form, text: S.text.length < 800000 ? S.text : '', at: S.at, gave: S.gave })); } catch (e) {} };
+  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify({ form: S.form, text: S.text.length < 800000 ? S.text : '', at: S.at, gave: S.gave, style: S.style, cut: S.cut })); } catch (e) {} };
   const say = (id, t) => { const el = $(id); el.textContent = t; if (t) setTimeout(() => { if (el.textContent === t) el.textContent = ''; }, 4000); };
   const download = (name, text, type) => { const a = h('a', { href: URL.createObjectURL(new Blob([text], { type: type || 'text/plain' })), download: name }); document.body.append(a); a.click(); a.remove(); };
   const copy = async (text) => { try { await navigator.clipboard.writeText(text); return true; } catch (e) { const t = h('textarea'); t.value = text; document.body.append(t); t.select(); const ok = document.execCommand('copy'); t.remove(); return ok; } };
@@ -402,7 +419,7 @@
     return gs;
   })();
   const missing = () => fields.filter((f) => f.필수 && !String(S.form[f.id] || '').trim());
-  const NEXT_NAME = { 2: 'AI에게 주기', 3: '답 넣고 점검', 4: '그림 넣기', 5: '해 보기' };
+  const NEXT_NAME = { 2: 'AI에게 주기', 3: '답 넣고 점검', 4: '그림 만들기', 5: '해 보기' };
 
   function go(step, sub) {
     if (step !== 'guide') step = Math.min(5, Math.max(1, Number(step) || 1));
@@ -447,7 +464,7 @@
       : step === 1 ? (miss ? '필수 칸 ' + miss + '개가 비어 있어요' : '필수 칸을 모두 채웠어요')
       : step === 2 ? (S.gave ? 'AI가 데이터를 다 쓰면 다음으로' : '글을 복사해 AI에게 붙여 넣으세요')
       : step === 3 ? (!S.data ? 'AI의 답을 붙여 넣고 점검하세요' : S.errors ? '오류를 고쳐야 해 볼 수 있어요' : '점검을 통과했어요')
-      : step === 4 ? '그림은 넣지 않아도 됩니다' : '';
+      : step === 4 ? (slotTotal ? '그림 ' + slotTotal + '칸 가운데 ' + Object.keys(S.images).length + '칸을 채웠어요' : '그림은 넣지 않아도 됩니다') : '';
   }
   document.addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) go(+b.dataset.go); });
   $('#btn-next').addEventListener('click', next);
@@ -637,7 +654,28 @@
     say('#said-check', 'my-game 폴더의 게임을 불러왔어요.');
   });
 
-  // ─────────── ④ 그림 ───────────
+  // ─────────── ④ 그림 만들기 ───────────
+  // 그림 칸마다 그림 AI에 줄 글(프롬프트)을 만든다. 받은 그림을 칸에 넣으면 크기를 줄이고, 인물의 단색 배경은 지운다
+  const STYLE_DEFAULT = '따뜻한 색감의 애니메이션풍 일러스트';
+  const STYLE_PRESETS = [STYLE_DEFAULT, '차분한 색감의 그림책 일러스트', '부드러운 수채화', '깔끔한 평면 일러스트', '연필 스케치에 옅은 채색'];
+  const styleOf = () => String(S.style || ((S.data || {}).게임 || {}).그림체 || S.form.그림체 || STYLE_DEFAULT).trim();
+  const EXPR_LOOK = {
+    default: '편안한 기본 얼굴', smile: '환하게 웃는 얼굴', surprised: '깜짝 놀라 눈을 크게 뜬 얼굴', think: '턱에 손을 대고 생각에 잠긴 얼굴',
+    flustered: '당황해서 땀을 흘리는 얼굴', serious: '진지하고 단호한 얼굴', sad: '슬퍼서 눈물이 맺힌 얼굴', angry: '화가 나서 소리치는 얼굴',
+    confident: '자신만만하게 웃는 얼굴', determined: '굳게 결심한 얼굴', worried: '걱정스러운 얼굴', relieved: '안도의 한숨을 쉬는 얼굴',
+    smirk: '한쪽 입꼬리만 올려 비웃는 얼굴', scared: '겁에 질린 얼굴', stern: '엄숙하고 근엄한 얼굴', grateful: '고마워서 감동한 얼굴',
+    awkward: '난처해서 어색하게 웃는 얼굴', sorry: '미안해서 고개를 살짝 숙인 얼굴', blank: '아무 표정 없는 얼굴', tired: '지쳐서 축 처진 얼굴',
+    back: '뒤돌아선 뒷모습 (얼굴이 보이지 않게)',
+  };
+  const SEAT_LOOK = {
+    전경: '법정 전체를 방청석 쪽에서 정면으로 본 모습. 가운데 높은 재판장석, 그 앞의 증언대, 왼쪽 변호인석, 오른쪽 검사석.',
+    변호인석: '법정 안, 변호인석에 선 사람의 뒤로 보이는 벽 (가운데에 인물이 서고, 아래에 책상이 놓인다).',
+    검사석: '법정 안, 검사석에 선 사람의 뒤로 보이는 벽 (가운데에 인물이 서고, 아래에 책상이 놓인다).',
+    증언대: '법정 안, 증언대에 선 증인의 뒤로 보이는 방청석과 벽 (가운데에 인물이 선다).',
+    피고석: '법정 안, 피고석에 앉은 사람의 뒤로 보이는 벽 (가운데에 인물이 앉는다).',
+    재판장석: '법정 안, 높은 재판장석과 그 뒤의 벽 (가운데에 재판장이 앉는다).',
+  };
+  const SEAT_DESK = { 변호인석: '변호인석 책상의 앞면', 검사석: '검사석 책상의 앞면', 증언대: '증언대(가운데의 작은 단상)의 앞면', 피고석: '피고석 앞의 낮은 난간' };
   function imageSlots() {
     const g = (S.data || {}).게임 || {};
     const expr = Object.assign({}, D.EXPR, g.표정);
@@ -645,17 +683,112 @@
     const add = (n, e) => { if (g.인물 && g.인물[n]) (used[n] = used[n] || new Set(['기본'])).add(expr[e] ? e : '기본'); };
     const evs = [];
     episodes(S.data).forEach(([, ep]) => {
-      Object.entries(ep.증거 || {}).forEach(([id, e]) => evs.push({ key: e.그림 || 'evidence/' + id, 이름: e.이름 || id, 설명: D.list(e.설명).join(' ') }));
+      Object.entries(ep.증거 || {}).forEach(([id, e]) => evs.push({ kind: 'ev', key: e.그림 || 'evidence/' + id, 이름: e.이름 || id, desc: e.그림설명 || '', 설명: D.list(e.설명).join(' ').replace(/\*\*/g, ''), max: 768 }));
       walk(ep.막.flatMap((m) => D.list(m.내용)), (c) => { if (c.말) add(c.말, c.표정); if (c.보이기) add(c.보이기, c.표정); if (c.등장) add(c.등장, c.표정); if (c.증인) add(c.증인, c.표정); if (c.보기) add(c.보기, c.보기표정); });
     });
     const chars = [];
-    for (const [n, c] of Object.entries(g.인물 || {})) for (const e of used[n] || ['기본']) chars.push({ key: 'characters/' + (c.파일 || 'char_' + n) + '_' + expr[e], 이름: n + ' · ' + e, max: 1024, 설명: c.생김새 || '' });
-    const bgs = Object.entries(g.배경 || {}).filter(([, b]) => b && !b.법정 && b.그림 !== null).map(([n, b]) => ({ key: b.그림 || 'backgrounds/' + n, 이름: n, wide: true, max: 1536 }));
-    const court = Object.entries(D.SEATS).flatMap(([n, z]) => [{ key: z.배경, 이름: n + ' 배경', wide: true, max: 1536 }, z.책상 ? { key: z.책상, 이름: n + ' 책상 (앞그림)', wide: true, max: 1536 } : null]).filter(Boolean);
-    const title = [g.제목그림 ? { key: g.제목그림, 이름: '제목 그림 (글자 대신)', wide: true, max: 1536 } : null, g.처음화면그림 ? { key: g.처음화면그림, 이름: '처음 화면 그림', wide: true, max: 1536 } : null].filter(Boolean);
-    return { chars, bgs, court, title, evs: evs.map((e) => Object.assign(e, { max: 768 })) };
+    for (const [n, c] of Object.entries(g.인물 || {})) for (const e of used[n] || ['기본']) chars.push({ kind: 'char', key: 'characters/' + (c.파일 || 'char_' + n) + '_' + expr[e], 이름: n + ' · ' + e, who: n, first: e === '기본', look: EXPR_LOOK[expr[e]] || e, desc: c.생김새 || '', max: 1024, cut: true });
+    const bgs = Object.entries(g.배경 || {}).filter(([, b]) => b && !b.법정 && b.그림 !== null).map(([n, b]) => ({ kind: 'place', key: b.그림 || 'backgrounds/' + n, 이름: n, desc: b.그림설명 || '', wide: true, max: 1536 }));
+    const court = Object.entries(D.SEATS).flatMap(([n, z]) => [{ kind: 'seat', seat: n, key: z.배경, 이름: n + ' 배경', wide: true, max: 1536 }, z.책상 ? { kind: 'seat', seat: n, desk: true, key: z.책상, 이름: n + ' 책상 (앞그림)', wide: true, max: 1536, cut: true } : null]).filter(Boolean);
+    const title = [g.제목그림 ? { kind: 'logo', key: g.제목그림, 이름: '제목 그림 (글자 대신)', wide: true, max: 1536, cut: true } : null, g.처음화면그림 ? { kind: 'cover', key: g.처음화면그림, 이름: '처음 화면 그림', wide: true, max: 1536 } : null].filter(Boolean);
+    return { chars, bgs, court, title, evs };
   }
-  function fileToDataUrl(file, max) {
+  // 그림 AI에 줄 글. 인물의 두 번째 표정부터는 "앞에서 그린 그 사람" 으로 이어 그리게 한다 (같은 대화에서)
+  function promptFor(s) {
+    const g = (S.data || {}).게임 || {};
+    const head = ['「' + (g.제목 || '수업 게임') + '」 게임에 쓸 그림을 한 장 그려 줘.', '그림체: ' + styleOf() + '. 이 게임의 모든 그림을 이 그림체로 맞춘다.'];
+    const clear = '배경은 투명하게 (PNG). 투명이 안 되면 무늬 없는 단색 자홍색(#FF00FF)으로 칠해 줘.';
+    const noText = '글자, 말풍선, 테두리, 워터마크는 넣지 마.';
+    if (s.kind === 'char') {
+      if (!s.first) return ['앞에서 그린 「' + s.who + '」와 똑같은 사람을 한 장 더 그려 줘. 얼굴 생김새, 머리 모양, 옷, 그림체, 구도, 크기를 모두 같게 하고 표정만 바꿔 줘.', '표정: ' + s.look, '정사각형(1:1). ' + clear, noText].join('\n');
+      return [...head, '인물: 「' + s.who + '」' + (s.desc ? ', ' + s.desc : ''), '표정: ' + s.look, '구도: 허리 위 상반신, 정면을 보고 선 모습. 머리는 위쪽 가운데, 정수리 위에 여백을 조금. 정사각형(1:1).', clear, noText].join('\n');
+    }
+    if (s.kind === 'place') return [...head, '장소: 「' + s.이름 + '」' + (s.desc ? ', ' + s.desc : ''), '구도: 가로 3 : 세로 2. 사람 없이 장소만. 아래쪽 4분의 1은 대사창에 가려지니 중요한 것은 위쪽과 가운데에.', noText].join('\n');
+    if (s.kind === 'seat' && s.desk) return [...head, '법정의 ' + SEAT_DESK[s.seat] + '만 그려 줘. 그림 아래쪽 3분의 1에 가로로 길게 놓이고, 나머지는 비워 둔다. 앞에서 그린 「' + s.seat + ' 배경」과 같은 나무, 같은 색으로.', '구도: 가로 3 : 세로 2.', clear, noText].join('\n');
+    if (s.kind === 'seat') return [...head, '장소: ' + SEAT_LOOK[s.seat], '구도: 가로 3 : 세로 2. 사람 없이.', noText].join('\n');
+    if (s.kind === 'logo') return [...head, '게임 제목 로고: 「' + (g.제목 || '') + '」. 제목 글자를 크고 또렷하게, 장식은 주제에 맞게.', '가로로 긴 모양. ' + clear, '제목 말고 다른 글자는 넣지 마.'].join('\n');
+    if (s.kind === 'cover') return [...head, '처음 화면 그림: 게임의 분위기를 보여 주는 장소. 가운데에 제목과 버튼이 올라가니 가운데는 차분하게.', '구도: 가로 3 : 세로 2. 사람 없이.', noText].join('\n');
+    return [...head, '증거: 「' + s.이름 + '」' + (s.desc ? ', ' + s.desc : s.설명 ? ' (' + s.설명.slice(0, 90) + ')' : ''), '구도: 정사각형(1:1). 물건 하나가 가운데에 크게, 배경은 단순하게.', '글자는 넣지 마 (그림 AI는 한글을 잘 못 쓴다). 문서라면 글줄을 흐린 선으로만.'].join('\n');
+  }
+  // 단색 배경 지우기: 위쪽과 양옆 가장자리에서 이어진, 가장자리와 같은 색을 투명하게 한다.
+  // 이미 투명한 그림, 배경이 한 가지 색이 아닌 그림은 그대로 둔다. 지웠으면 true
+  function cutFlatBackground(canvas) {
+    const W = canvas.width, H = canvas.height, ctx = canvas.getContext('2d');
+    const img = ctx.getImageData(0, 0, W, H), d = img.data;
+    const seeds = [];
+    for (let x = 0; x < W; x++) seeds.push(x);
+    for (let y = 1; y < Math.floor(H * 0.6); y++) seeds.push(y * W, y * W + W - 1);
+    if (seeds.filter((p) => d[p * 4 + 3] < 200).length > seeds.length * 0.2) return false; // 이미 투명
+    const count = {};
+    for (const p of seeds) { const k = (d[p * 4] >> 4) + ',' + (d[p * 4 + 1] >> 4) + ',' + (d[p * 4 + 2] >> 4); count[k] = (count[k] || 0) + 1; }
+    const [top, n] = Object.entries(count).sort((a, b) => b[1] - a[1])[0];
+    if (n < seeds.length * 0.5) return false; // 배경이 한 가지 색이 아니다
+    const [kr, kg, kb] = top.split(',').map(Number);
+    let r = 0, gg = 0, b = 0, m = 0;
+    for (const p of seeds) if ((d[p * 4] >> 4) === kr && (d[p * 4 + 1] >> 4) === kg && (d[p * 4 + 2] >> 4) === kb) { r += d[p * 4]; gg += d[p * 4 + 1]; b += d[p * 4 + 2]; m++; }
+    r /= m; gg /= m; b /= m;
+    const T = 60 * 60, dist = (p) => { const dr = d[p * 4] - r, dg = d[p * 4 + 1] - gg, db = d[p * 4 + 2] - b; return dr * dr + dg * dg + db * db; };
+    const bg = new Uint8Array(W * H), queue = new Int32Array(W * H);
+    let qh = 0, qt = 0;
+    for (const p of seeds) if (!bg[p] && dist(p) < T) { bg[p] = 1; queue[qt++] = p; }
+    while (qh < qt) {
+      const p = queue[qh++], x = p % W, y = (p - x) / W;
+      for (const q of [x > 0 ? p - 1 : -1, x < W - 1 ? p + 1 : -1, y > 0 ? p - W : -1, y < H - 1 ? p + W : -1]) if (q >= 0 && !bg[q] && dist(q) < T) { bg[q] = 1; queue[qt++] = q; }
+    }
+    if (qt < W * H * 0.05) return false; // 지울 곳이 거의 없다
+    // 머리카락과 어깨 사이처럼 갇힌 틈: 배경이 자홍색처럼 짙은 색일 때만 같은 색 덩어리를 지운다 (흰 배경이면 흰 옷이 지워질 수 있어서)
+    const km0 = (r + gg + b) / 3, sat = Math.sqrt((r - km0) ** 2 + (gg - km0) ** 2 + (b - km0) ** 2);
+    if (sat > 90) {
+      const seen = new Uint8Array(W * H);
+      for (let s0 = 0; s0 < W * H; s0++) {
+        if (bg[s0] || seen[s0] || dist(s0) >= 30 * 30) continue;
+        qh = qt = 0; queue[qt++] = s0; seen[s0] = 1;
+        while (qh < qt) {
+          const p = queue[qh++], x = p % W, y = (p - x) / W;
+          for (const q of [x > 0 ? p - 1 : -1, x < W - 1 ? p + 1 : -1, y > 0 ? p - W : -1, y < H - 1 ? p + W : -1]) if (q >= 0 && !bg[q] && !seen[q] && dist(q) < T) { seen[q] = 1; queue[qt++] = q; }
+        }
+        if (qt >= 4) for (let i = 0; i < qt; i++) bg[queue[i]] = 1;
+      }
+    }
+    // 테두리 띠(배경에서 3칸 안): 배경색이 섞인 점. 가까운 곳에서 배경과 가장 다른 색을 기준으로 얼마나 섞였는지 재서 배경색을 빼낸다
+    const band = new Uint8Array(W * H);
+    for (let pass = 1; pass <= 3; pass++) {
+      for (let p = 0; p < W * H; p++) {
+        if (bg[p] || band[p]) continue;
+        const x = p % W, near = (q) => bg[q] || (band[q] && band[q] < pass);
+        if ((x > 0 && near(p - 1)) || (x < W - 1 && near(p + 1)) || (p >= W && near(p - W)) || (p < W * H - W && near(p + W))) band[p] = pass + 10;
+      }
+      for (let p = 0; p < W * H; p++) if (band[p] === pass + 10) band[p] = pass;
+    }
+    const out = new Uint8ClampedArray(d);
+    for (let p = 0; p < W * H; p++) {
+      if (bg[p]) { out[p * 4 + 3] = 0; continue; }
+      if (!band[p]) continue;
+      const x = p % W, y = (p - x) / W;
+      let best = dist(p); // 둘레 9×9 안에서 배경과 가장 다른 색들 (섞이지 않은 앞쪽 색)
+      for (let yy = Math.max(0, y - 4); yy <= Math.min(H - 1, y + 4); yy++) for (let xx = Math.max(0, x - 4); xx <= Math.min(W - 1, x + 4); xx++) { const q = yy * W + xx; if (!bg[q]) best = Math.max(best, dist(q)); }
+      let fr = 0, fg = 0, fb = 0, k = 0;
+      for (let yy = Math.max(0, y - 4); yy <= Math.min(H - 1, y + 4); yy++) for (let xx = Math.max(0, x - 4); xx <= Math.min(W - 1, x + 4); xx++) {
+        const q = yy * W + xx;
+        if (!bg[q] && dist(q) >= best * 0.8) { fr += d[q * 4]; fg += d[q * 4 + 1]; fb += d[q * 4 + 2]; k++; }
+      }
+      fr /= k; fg /= k; fb /= k;
+      const vr = fr - r, vg = fg - gg, vb = fb - b, vv = vr * vr + vg * vg + vb * vb || 1;
+      const a = Math.max(0, Math.min(1, ((d[p * 4] - r) * vr + (d[p * 4 + 1] - gg) * vg + (d[p * 4 + 2] - b) * vb) / vv));
+      if (a < 0.08) { out[p * 4 + 3] = 0; continue; }
+      const un = (c, bgc, fc) => (a > 0.35 ? (c - (1 - a) * bgc) / a : fc); // 섞인 배경색을 빼낸 색
+      let cr = un(d[p * 4], r, fr), cg = un(d[p * 4 + 1], gg, fg), cb = un(d[p * 4 + 2], b, fb);
+      // 그래도 남은 배경색 기운을 덜어 낸다 (테두리에서만)
+      const km = (r + gg + b) / 3, kr = r - km, kg = gg - km, kb = b - km, kl = Math.sqrt(kr * kr + kg * kg + kb * kb);
+      if (kl > 40) { const cm = (cr + cg + cb) / 3, sp = ((cr - cm) * kr + (cg - cm) * kg + (cb - cm) * kb) / kl; if (sp > 0) { cr -= sp * kr / kl; cg -= sp * kg / kl; cb -= sp * kb / kl; } }
+      out[p * 4] = cr; out[p * 4 + 1] = cg; out[p * 4 + 2] = cb;
+      out[p * 4 + 3] = Math.round(d[p * 4 + 3] * a);
+    }
+    d.set(out);
+    ctx.putImageData(img, 0, 0);
+    return true;
+  }
+  function fileToDataUrl(file, max, cut) {
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(file);
       const im = new Image();
@@ -665,56 +798,76 @@
         c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
         c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
         URL.revokeObjectURL(url);
+        const cutDone = cut && S.cut !== false && cutFlatBackground(c);
         let out = c.toDataURL('image/webp', 0.86);
-        if (!out.startsWith('data:image/webp')) out = c.toDataURL(file.type === 'image/jpeg' ? 'image/jpeg' : 'image/png', 0.88);
-        resolve(out);
+        if (!out.startsWith('data:image/webp')) out = c.toDataURL(cut || file.type !== 'image/jpeg' ? 'image/png' : 'image/jpeg', 0.88);
+        resolve({ url: out, cut: cutDone });
       };
       im.onerror = () => { URL.revokeObjectURL(url); reject(new Error('그림을 읽지 못했어요')); };
       im.src = url;
     });
   }
+  let toastTimer = null;
+  const toast = (t) => { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('on'), 3200); };
   function slotEl(s) {
-    const pic = h('div', { class: 'pic' });
-    const draw = () => { pic.innerHTML = ''; if (S.images[s.key]) pic.append(h('img', { src: S.images[s.key], alt: '' })); else pic.textContent = '＋'; del.disabled = !S.images[s.key]; sizeNote(); };
-    const put = async (file) => { if (!file || !/^image\//.test(file.type)) return; try { S.images[s.key] = await fileToDataUrl(file, s.max); draw(); } catch (e) { alert(e.message); } };
+    const pic = h('button', { class: 'pic', type: 'button', title: '그림 고르기 (끌어다 놓아도 됩니다)' });
+    const draw = () => { pic.innerHTML = ''; if (S.images[s.key]) pic.append(h('img', { src: S.images[s.key], alt: '' })); else pic.textContent = '＋'; del.disabled = !S.images[s.key]; el.classList.toggle('done', !!S.images[s.key]); sizeNote(); };
+    const put = async (file) => {
+      if (!file || !/^image\//.test(file.type)) return;
+      try { const r = await fileToDataUrl(file, s.max, s.cut); S.images[s.key] = r.url; draw(); toast('「' + s.이름 + '」 그림을 넣었어요.' + (r.cut ? ' 단색 배경을 지웠어요.' : '')); } catch (e) { alert(e.message); }
+    };
     const input = h('input', { type: 'file', accept: 'image/*', class: 'hidden' });
     input.addEventListener('change', () => { put(input.files[0]); input.value = ''; });
-    const del = h('button', { class: 'sub small', type: 'button', onclick: () => { delete S.images[s.key]; draw(); } }, '지우기');
-    const el = h('div', { class: 'slot' + (s.wide ? ' wide' : ''), title: s.key }, pic, h('b', {}, s.이름), h('div', { class: 'row' }, h('button', { class: 'small', type: 'button', onclick: () => input.click() }, '고르기'), del), input);
+    pic.addEventListener('click', () => input.click());
+    const del = h('button', { class: 'sub small x', type: 'button', title: '그림 지우기', 'aria-label': s.이름 + ' 그림 지우기', onclick: () => { delete S.images[s.key]; draw(); } }, '✕');
+    const ask = h('button', { class: 'small ask', type: 'button', title: '그림 AI에 줄 글 복사', onclick: async () => toast((await copy(promptFor(s))) ? '「' + s.이름 + '」 프롬프트를 복사했어요. 그림 AI에 붙여 넣으세요.' : '복사하지 못했어요.') }, '프롬프트');
+    const el = h('div', { class: 'slot' + (s.wide ? ' wide' : ''), title: s.key }, pic, h('b', {}, s.이름), h('div', { class: 'row' }, ask, del), input);
     el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('drag'); });
     el.addEventListener('dragleave', () => el.classList.remove('drag'));
     el.addEventListener('drop', (e) => { e.preventDefault(); el.classList.remove('drag'); put(e.dataTransfer.files[0]); });
     draw();
     return el;
   }
+  let slotTotal = 0;
   function sizeNote() {
     refreshNav();
     const el = $('#img-size');
     if (!el) return;
     const bytes = Object.values(S.images).reduce((a, v) => a + v.length * 0.75, 0);
-    el.textContent = '넣은 그림 ' + Object.keys(S.images).length + '개, 약 ' + (bytes / 1024 / 1024).toFixed(1) + 'MB' + (bytes > 25e6 ? ' (파일이 큽니다. 학생 기기에서 느릴 수 있어요)' : '');
+    const filled = document.querySelectorAll('#images .slot.done').length;
+    el.textContent = slotTotal + '칸 가운데 ' + filled + '칸을 채웠어요 · 넣은 그림 약 ' + (bytes / 1024 / 1024).toFixed(1) + 'MB' + (bytes > 25e6 ? ' (파일이 큽니다. 학생 기기에서 느릴 수 있어요)' : '');
   }
-  function orderText(sl) {
-    const g = S.data.게임 || {};
-    return ['아래 게임에 쓸 그림을 그려 줘. 모든 그림의 그림체를 같게 맞춰 줘. 글자는 넣지 마.', '게임: ' + (g.제목 || ''), '',
-      '[인물] 정사각형(1024×1024), 배경은 투명(또는 단색), 허리 위 상반신, 정면, 머리가 위쪽 가운데에 오게. 같은 인물은 옷과 머리 모양을 똑같이.',
-      ...sl.chars.map((c) => '- ' + c.이름 + (c.설명 ? ' (' + c.설명 + ')' : '')), '',
-      '[배경] 가로 3 : 세로 2 (1536×1024), 사람 없이 장소만. 아래쪽 4분의 1은 대사창에 가리니 중요한 것은 위쪽에.',
-      ...sl.bgs.map((b) => '- ' + b.이름), '',
-      '[증거] 정사각형(768×768), 물건 하나가 가운데에 크게.',
-      ...sl.evs.map((e) => '- ' + e.이름 + ': ' + e.설명.replace(/\*\*/g, '').slice(0, 80))].join('\n');
+  function allPrompts(sl) {
+    const list = [...sl.title, ...sl.chars, ...sl.bgs, ...sl.evs, ...sl.court];
+    return ['아래 그림들을 한 장씩 차례로 그려 줘. 모든 그림의 그림체를 같게 맞춰 줘.', ''].concat(list.map((s, i) => '## ' + (i + 1) + '. ' + s.이름 + '\n' + promptFor(s) + '\n')).join('\n');
   }
   function renderImages() {
     const box = $('#images');
     box.innerHTML = '';
-    if (!S.data) { box.append(h('div', { class: 'note' }, '먼저 3단계에서 AI의 답을 점검해 주세요. 그러면 필요한 그림 칸이 나옵니다. ', h('button', { class: 'sub small', type: 'button', 'data-go': '3' }, '3단계로 가기'))); refreshNav(); return; }
+    if (!S.data) { slotTotal = 0; box.append(h('div', { class: 'note' }, '먼저 3단계에서 AI의 답을 점검해 주세요. 그러면 필요한 그림 칸이 나옵니다. ', h('button', { class: 'sub small', type: 'button', 'data-go': '3' }, '3단계로 가기'))); refreshNav(); return; }
     const sl = imageSlots();
-    const group = (title, list, open) => h('details', { open: open || null }, h('summary', {}, title + ' (' + list.length + ')'), h('div', { class: 'slots' }, list.map(slotEl)));
+    slotTotal = sl.title.length + sl.chars.length + sl.bgs.length + sl.evs.length + sl.court.length;
+    const styleInput = h('input', { type: 'text', id: 'img-style', list: 'img-style-list', value: styleOf(), 'aria-describedby': 'img-style-help' });
+    styleInput.addEventListener('change', () => { S.style = styleInput.value.trim(); persist(); toast('그림체를 바꿨어요. 이제 복사하는 프롬프트에 들어갑니다.'); });
+    const cutBox = h('input', { type: 'checkbox', id: 'img-cut' });
+    cutBox.checked = S.cut !== false;
+    cutBox.addEventListener('change', () => { S.cut = cutBox.checked; persist(); });
+    const group = (title, list, open, note) => list.length ? h('details', { open: open || null }, h('summary', {}, title + ' (' + list.length + ')'), note ? h('p', { class: 'help' }, note) : null, h('div', { class: 'slots' }, list.map(slotEl))) : null;
     box.append(
-      h('div', { class: 'btns' }, h('button', { class: 'sub', type: 'button', onclick: async () => say('#said-img', (await copy(orderText(sl))) ? '그림 주문서를 복사했어요. 그림을 그려 주는 AI에게 붙여 넣으세요.' : '복사하지 못했어요.') }, '그림 주문서 복사 (그림 AI에게 줄 글)'), h('span', { class: 'said', id: 'said-img' })),
-      sl.title.length ? group('처음 화면', sl.title, true) : null, group('인물', sl.chars, true), group('배경', sl.bgs, true), group('증거', sl.evs), group('법정 자리 그림 (없으면 기본 그림)', sl.court),
+      h('div', { class: 'imgtools' },
+        h('div', { class: 'fld' }, h('label', { class: 'l', for: 'img-style' }, '그림체'), h('p', { class: 'help', id: 'img-style-help' }, '모든 프롬프트에 들어가서 그림을 같은 그림체로 맞춥니다.'), styleInput,
+          h('datalist', { id: 'img-style-list' }, STYLE_PRESETS.map((t) => h('option', { value: t })))),
+        h('div', { class: 'tools-r' },
+          h('label', { class: 'chk' }, cutBox, h('span', {}, '인물 그림의 단색 배경을 저절로 지우기')),
+          h('button', { class: 'sub small', type: 'button', onclick: async () => toast((await copy(allPrompts(sl))) ? '프롬프트 ' + slotTotal + '개를 한꺼번에 복사했어요.' : '복사하지 못했어요.') }, '프롬프트 모두 복사'))),
+      h('ol', { class: 'flow' },
+        h('li', {}, h('span', { class: 'k' }, '1 · 이 화면'), h('b', {}, '[프롬프트] 복사'), '칸 아래의 [프롬프트]를 누르면 그 그림에 맞는 글이 복사됩니다.'),
+        h('li', {}, h('span', { class: 'k' }, '2 · 그림 AI'), h('b', {}, '붙여 넣고 그리기'), 'ChatGPT, Gemini 같은 그림 AI에 붙여 넣습니다. 인물은 「기본」을 먼저 그리고, 같은 대화에서 다른 표정을 이어서 그리면 같은 사람으로 나옵니다.'),
+        h('li', {}, h('span', { class: 'k' }, '3 · 이 화면'), h('b', {}, '칸에 넣기'), '받은 그림을 칸에 끌어다 놓거나 칸을 눌러 고릅니다. 크기는 알아서 줄이고, 인물의 단색 배경은 지웁니다.')),
       h('div', { class: 'note', id: 'img-size' }),
-      h('div', { class: 'note warn' }, '그림은 내가 그렸거나, 쓸 수 있다고 허락받은 것만 넣으세요. 인터넷에서 찾은 그림, 교과서 그림, 다른 게임이나 만화의 그림은 저작권 문제가 생길 수 있습니다. (docs/그림_넣기.md)'));
+      ...[group('처음 화면', sl.title, true), group('인물', sl.chars, true, '「기본」 표정부터 그리세요. 없는 표정은 기본 표정으로 나옵니다.'), group('장소', sl.bgs, true),
+        group('증거', sl.evs, false), group('법정 (없으면 코드로 그린 법정)', sl.court, false, '책상(앞그림)은 인물 앞에 겹쳐 보입니다. 배경을 먼저 그리고 같은 대화에서 책상을 그리세요.')].filter(Boolean),
+      h('div', { class: 'note warn' }, '그림은 내가 그렸거나 그림 AI로 만든 것, 쓸 수 있다고 허락받은 것만 넣으세요. 인터넷에서 찾은 그림, 교과서 그림, 다른 게임이나 만화의 그림은 저작권 문제가 생길 수 있습니다. 그림 AI의 이용 조건도 확인해 주세요. (docs/그림_넣기.md)'));
     sizeNote();
   }
 
@@ -741,7 +894,7 @@
     say('#said-export', '받은 파일을 키트의 my-game 폴더에 넣으세요 (있던 파일을 바꿉니다).');
   });
 
-  window.KIT_MAKER = { S, runCheck, buildPrompt, imageSlots, htmlOf, go }; // 시험용
+  window.KIT_MAKER = { S, runCheck, buildPrompt, imageSlots, promptFor, cutFlatBackground, htmlOf, go }; // 시험용
 
   // 처음 연 사람은 사용법부터, 쓰던 사람은 하던 단계부터
   const hash = location.hash.match(/^#step-([1-5])$/);

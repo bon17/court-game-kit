@@ -11,7 +11,8 @@
   function parseValue(src, start) {
     let i = start;
     const n = src.length;
-    const fail = (msg, help, at = i) => { throw new ParseError(msg, at, help); };
+    // 글의 끝에서 멈췄다면 어떤 오류든 답이 끊긴 것으로 본다
+    const fail = (msg, help, at = i) => { if (i >= n && !String(help || '').includes('끊긴')) help = (help ? help + ' ' : '') + CUT; throw new ParseError(msg, at, help); };
     const CUT = 'AI의 답이 중간에 끊긴 것 같아요. AI에게 "끊긴 곳부터 이어서 써 줘"라고 한 뒤, 이어진 글을 붙여서 다시 넣어 주세요.';
     function ws() {
       for (;;) {

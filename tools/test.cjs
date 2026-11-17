@@ -73,6 +73,18 @@ const loadData = (dir) => {
       await m.click('#btn-check');
       await m.waitForFunction(() => /끝까지 실행됐어요|실행 중 문제|읽지 못했어요/.test(document.querySelector('#result').textContent), null, { timeout: 60000 }).catch(() => {});
       ok(/끝까지 실행됐어요/.test(await m.textContent('#result')), '만들기 도우미의 점검과 자동 실행을 통과한다');
+      // 4단계: 그림 칸마다 그림 AI에 줄 글, 단색 배경 지우기
+      await m.click('#steps [data-go="4"]');
+      const img = await m.evaluate(() => {
+        const K = window.KIT_MAKER, sl = K.imageSlots(), first = sl.chars[0], next = sl.chars.find((c) => !c.first);
+        const c = document.createElement('canvas'); c.width = 200; c.height = 200;
+        const x = c.getContext('2d'); x.fillStyle = '#ff00ff'; x.fillRect(0, 0, 200, 200); x.fillStyle = '#3366aa'; x.fillRect(60, 40, 80, 160);
+        const cut = K.cutFlatBackground(c), px = (a, b) => x.getImageData(a, b, 1, 1).data[3];
+        return { slots: document.querySelectorAll('#images .slot').length, buttons: [...document.querySelectorAll('#images .slot button')].filter((b) => b.textContent === '프롬프트').length,
+          p1: K.promptFor(first), p2: next ? K.promptFor(next) : '앞에서 그린', style: document.querySelector('#img-style').value, cut, corner: px(5, 5), body: px(100, 100) };
+      });
+      ok(img.slots > 0 && img.buttons === img.slots && img.p1.includes(img.style) && img.p1.includes('정사각형') && /앞에서 그린/.test(img.p2), '4단계: 그림 칸 ' + img.slots + '개마다 그림 AI에 줄 글이 있다');
+      ok(img.cut && img.corner === 0 && img.body === 255, '4단계: 인물 그림의 단색 배경을 지운다');
       await m.click('#steps [data-go="5"]');
       const [dl] = await Promise.all([m.waitForEvent('download'), m.click('#btn-export')]);
       const file = path.join(tmp, ed + '.html');
