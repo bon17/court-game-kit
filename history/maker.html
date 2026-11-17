@@ -314,7 +314,7 @@
   <div class="head"><div>
     <p class="kicker">4단계 · 그림 넣기 (선택)</p>
     <h2>그림이 있으면 칸에 넣으세요</h2>
-    <p class="lead">그림이 없어도 게임은 됩니다 (이모지 얼굴과 색 배경으로 나옵니다). 칸에 끌어다 놓거나 [고르기]를 누르세요. 크기는 자동으로 줄여 줍니다.</p>
+    <p class="lead">그림이 없어도 게임은 됩니다 (코드로 그린 인물과 배경으로 나옵니다). 칸에 끌어다 놓거나 [고르기]를 누르세요. 크기는 자동으로 줄여 줍니다.</p>
   </div></div>
   <div id="images"></div>
 </section>
@@ -652,7 +652,8 @@
     for (const [n, c] of Object.entries(g.인물 || {})) for (const e of used[n] || ['기본']) chars.push({ key: 'characters/' + (c.파일 || 'char_' + n) + '_' + expr[e], 이름: n + ' · ' + e, max: 1024, 설명: c.생김새 || '' });
     const bgs = Object.entries(g.배경 || {}).filter(([, b]) => b && !b.법정 && b.그림 !== null).map(([n, b]) => ({ key: b.그림 || 'backgrounds/' + n, 이름: n, wide: true, max: 1536 }));
     const court = Object.entries(D.SEATS).flatMap(([n, z]) => [{ key: z.배경, 이름: n + ' 배경', wide: true, max: 1536 }, z.책상 ? { key: z.책상, 이름: n + ' 책상 (앞그림)', wide: true, max: 1536 } : null]).filter(Boolean);
-    return { chars, bgs, court, evs: evs.map((e) => Object.assign(e, { max: 768 })) };
+    const title = [g.제목그림 ? { key: g.제목그림, 이름: '제목 그림 (글자 대신)', wide: true, max: 1536 } : null, g.처음화면그림 ? { key: g.처음화면그림, 이름: '처음 화면 그림', wide: true, max: 1536 } : null].filter(Boolean);
+    return { chars, bgs, court, title, evs: evs.map((e) => Object.assign(e, { max: 768 })) };
   }
   function fileToDataUrl(file, max) {
     return new Promise((resolve, reject) => {
@@ -711,7 +712,7 @@
     const group = (title, list, open) => h('details', { open: open || null }, h('summary', {}, title + ' (' + list.length + ')'), h('div', { class: 'slots' }, list.map(slotEl)));
     box.append(
       h('div', { class: 'btns' }, h('button', { class: 'sub', type: 'button', onclick: async () => say('#said-img', (await copy(orderText(sl))) ? '그림 주문서를 복사했어요. 그림을 그려 주는 AI에게 붙여 넣으세요.' : '복사하지 못했어요.') }, '그림 주문서 복사 (그림 AI에게 줄 글)'), h('span', { class: 'said', id: 'said-img' })),
-      group('인물', sl.chars, true), group('배경', sl.bgs, true), group('증거', sl.evs), group('법정 자리 그림 (없으면 기본 그림)', sl.court),
+      sl.title.length ? group('처음 화면', sl.title, true) : null, group('인물', sl.chars, true), group('배경', sl.bgs, true), group('증거', sl.evs), group('법정 자리 그림 (없으면 기본 그림)', sl.court),
       h('div', { class: 'note', id: 'img-size' }),
       h('div', { class: 'note warn' }, '그림은 내가 그렸거나, 쓸 수 있다고 허락받은 것만 넣으세요. 인터넷에서 찾은 그림, 교과서 그림, 다른 게임이나 만화의 그림은 저작권 문제가 생길 수 있습니다. (docs/그림_넣기.md)'));
     sizeNote();

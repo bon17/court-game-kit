@@ -10,6 +10,6 @@
 5. 선생님에게는 `index.html` 을 두 번 눌러 해 보라고 안내한다. `index.html?teacher` 로 열면 장면을 골라 시작할 수 있다.
 6. 엔진이나 `ai/` 문서를 고쳤다면 `node tools/build.mjs` 로 `engine/bundle.js`, `ai/guide.js` 를 다시 만든다 (만들기 도우미 `maker.html` 이 쓴다).
 
-- 그림이 없어도 게임은 된다 (이모지 인물, 색 배경). 그림은 `my-game/images/` 에 넣는다 (`docs/그림_넣기.md`).
+- 그림이 없어도 게임은 된다 (코드로 그린 인물과 배경). 그림은 `my-game/images/` 에 넣는다 (`docs/그림_넣기.md`).
 - 한 파일로 묶기: `node tools/build.mjs --html` → `dist/` 에 HTML 한 파일.
 - 문서와 커밋 메시지는 쉬운 한국어로 쓴다.

@@ -35,6 +35,7 @@
     }
     for (const k of ['주인공', '조수']) if (g[k] && !인물[g[k]]) add('주의', '설정', k + " '" + g[k] + "' 이(가) 인물 표에 없어요.");
     if (typeof g.테마 === 'string' && !D.THEMES[g.테마]) add('주의', '설정', "테마 '" + g.테마 + "' 는 없어요. 기본 테마로 나와요.", '쓸 수 있는 테마: ' + Object.keys(D.THEMES).join(', '));
+    for (const k of ['제목그림', '처음화면그림']) if (g[k] != null && typeof g[k] !== 'string') add('주의', '설정', k + "는 그림 이름(글자)으로 적어요. 예: '" + (k === '제목그림' ? 'title_logo' : 'backgrounds/title') + "'");
     if (g.화선택 && !['자유', '코드', '순서'].includes(g.화선택)) add('주의', '설정', "화선택은 '자유', '코드', '순서' 가운데 하나여야 해요.");
     if (g.저장주소 && !/^https:\/\/script\.google\.com\/.+\/exec$/.test(g.저장주소)) add('주의', '설정', '저장주소가 구글 앱스 스크립트 웹 앱 주소(https://script.google.com/…/exec) 모양이 아니에요.');
 

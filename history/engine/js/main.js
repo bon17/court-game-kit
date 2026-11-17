@@ -210,9 +210,14 @@
     const canResume = !!(savedEp && savedEp.막[saved.막]);
     const menu = h('div', { class: 'menu' });
     const C = G.cfg;
+    // 제목 그림이 있으면 글자 제목 대신 띄운다 (그림이 없으면 글자 제목)
+    const logoUrl = C.제목그림 ? await G.loadImg(C.제목그림) : '';
+    const logo = logoUrl && !G.isPlaceholder(logoUrl)
+      ? h('div', { class: 'logo' }, h('img', { class: 'logo-img', src: logoUrl, alt: C.제목 }), C.부제 ? h('small', {}, C.부제) : null)
+      : h('div', { class: 'logo' }, C.부제 ? h('small', {}, C.부제) : null, h('h1', {}, C.제목));
     const s = openScreen(h('div', { class: 'screen title-screen' },
       G.imgEl(C.처음화면그림 || C.법정자리['전경'].배경, 'art cover'),
-      h('div', { class: 'logo' }, C.부제 ? h('small', {}, C.부제) : null, h('h1', {}, C.제목)),
+      logo,
       menu,
       h('div', { class: 'foot' }, C.만든이 ? '만든이: ' + C.만든이 : ''),
       h('div', { class: 'corner' }, h('button', { class: 'round-btn', 'aria-label': '전체 화면', onclick: toggleFullscreen, hidden: !fsEnabled }, '⛶'))));
@@ -297,7 +302,7 @@
     if (flag('fast')) G.fast = true;
     let issues = [];
     try { if (G.check && !window.KIT_SINGLE) issues = G.check(DATA).filter((i) => i.수준 !== '참고'); } catch (e) { console.error(e); }
-    await G.preload([G.cfg.처음화면그림 || G.cfg.법정자리['전경'].배경]);
+    await G.preload([G.cfg.처음화면그림 || G.cfg.법정자리['전경'].배경, G.cfg.제목그림].filter(Boolean));
     titleScreen(issues);
   }
   boot();
