@@ -42,7 +42,10 @@
   .top-bar { background: var(--main); color: #fff; }
   .top-bar .in, .steps .in, .bar .in, main { max-width: var(--w, 920px); margin: 0 auto; }
   .top-bar .in { display: flex; align-items: center; gap: 10px; padding: 7px 16px; min-height: 44px; }
-  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; letter-spacing: -.01em; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; letter-spacing: -.01em; color: inherit; text-decoration: none; border-radius: 6px; padding: 2px 6px; margin-left: -6px; }
+  .brand:hover { background: rgba(255, 255, 255, .1); }
+  .brand:hover .nm { text-decoration: underline; text-underline-offset: 3px; }
+  .brand:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .brand svg { color: var(--accent); flex: none; }
   .brand .ed { font-size: 12px; font-weight: 600; color: var(--accent); border: 1px solid rgba(226, 191, 110, .6); border-radius: 4px; padding: 0 6px; line-height: 1.6; }
   .top-bar .help-btn { margin-left: auto; background: transparent; border-color: rgba(255, 255, 255, .4); padding: 4px 11px; font-size: 13.5px; }
@@ -265,10 +268,10 @@
 <body>
 <div class="top">
   <div class="top-bar"><div class="in">
-    <div class="brand">
+    <a class="brand" id="home" href="https://bon17.github.io/court-game-kit/" title="키트 첫 화면으로 가기 (쓴 내용은 저장돼 있어요)">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M8 20.5h8M4.5 6.5h15"/><path d="M4.5 6.5 2 13M4.5 6.5 7 13M1.6 13a2.9 2.9 0 0 0 5.8 0z"/><path d="M19.5 6.5 17 13M19.5 6.5 22 13M16.6 13a2.9 2.9 0 0 0 5.8 0z"/></svg>
-      <span>만들기 도우미</span><span class="ed" id="edition"></span>
-    </div>
+      <span class="nm">만들기 도우미</span><span class="ed" id="edition"></span>
+    </a>
     <button class="help-btn" id="btn-guide" type="button">사용법</button>
   </div></div>
   <nav class="steps" aria-label="만드는 단계"><div class="in" id="steps">
@@ -452,6 +455,9 @@
   const copy = async (text) => { try { await navigator.clipboard.writeText(text); return true; } catch (e) { const t = h('textarea'); t.value = text; document.body.append(t); t.select(); const ok = document.execCommand('copy'); t.remove(); return ok; } };
 
   $('#edition').textContent = GUIDE.판이름;
+  // 「만들기 도우미」를 누르면 키트 첫 화면으로. 저장소 전체(court-game-kit 폴더, 누리집)에서 열었으면 바로 위의 첫 화면,
+  // 한 판만 내려받아 열었으면 누리집의 첫 화면으로 간다
+  if (/\/court-game-kit\/(general|history)\/maker\.html$/.test(decodeURIComponent(location.pathname))) $('#home').href = '../' + (location.protocol === 'file:' ? 'index.html' : '');
   $('#intro').textContent = GUIDE.소개 || '';
   $('#foot').textContent = '법정 추리 수업 게임 키트 ' + GUIDE.판이름 + ' · 원작 「기억의 법정」 BONSSAM · CC BY-NC-SA 4.0';
 

@@ -81,6 +81,7 @@ const loadData = (dir) => {
       const m = await ctx.newPage(); watch(m);
       await m.goto('file://' + path.join(dir, 'maker.html'));
       ok(await m.isVisible('#guide'), '만들기 도우미를 처음 열면 사용법이 나온다');
+      ok(/court-game-kit\/index\.html$|\/index\.html$/.test(await m.evaluate(() => document.querySelector('#home').href)) || dir.indexOf('court-game-kit') < 0, '「만들기 도우미」를 누르면 키트 첫 화면으로 간다');
       await m.click('#btn-start'); await m.click('#btn-example');
       // 설계서: 칸마다 AI에게 물어볼 글 (수업 정보와 선생님 메모가 들어간다), AI 답 다듬기
       const ask = await m.evaluate(() => {
