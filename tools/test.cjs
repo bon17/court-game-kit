@@ -94,7 +94,7 @@ const loadData = (dir) => {
       for (let i = 0; i < subs; i++) await m.click('#btn-next');
       ok(await m.isVisible('#s2'), '[다음]으로 설계서 ' + subs + '쪽을 넘기면 2단계(AI에게 주기)가 된다');
       const prompt = await m.inputValue('#prompt');
-      ok(/AI 지침/.test(prompt) && /데이터 형식/.test(prompt) && /수업 설계서/.test(prompt) && (ed !== 'history' || /역사 수업용 추가 지침/.test(prompt)), '만들기 도우미가 AI에게 줄 글을 만든다 (' + prompt.length + '자)');
+      ok(/AI 지침/.test(prompt) && /데이터 형식/.test(prompt) && /수업 설계서/.test(prompt) && /사실 검증표/.test(prompt) && (ed !== 'history' || (/역사 수업용 추가 지침/.test(prompt) && /역사적 사실 검증/.test(prompt) && (await m.getAttribute('#opt-check', 'aria-disabled')) === 'true' && await m.isChecked('#opt-check'))), '만들기 도우미가 AI에게 줄 글을 만든다 (' + prompt.length + '자)');
       await m.click('#btn-next');
       await m.fill('#paste', loadData(dir).text);
       await m.click('#btn-check');
