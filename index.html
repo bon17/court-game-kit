@@ -16,7 +16,7 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.6; word-break: keep-all; overflow-wrap: break-word; }
   a { color: inherit; }
-  .in { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+  .in { max-width: var(--w, 1320px); margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); }
 
   .top { background: var(--navy); color: #fff; }
   .top .in { display: flex; align-items: center; gap: 8px; min-height: 46px; }
@@ -32,7 +32,7 @@
 
   .eds { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .ed { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
-  .ed .shot { display: block; aspect-ratio: 16 / 10; background: #111 center / cover no-repeat; position: relative; }
+  .ed .shot { display: block; aspect-ratio: 16 / 9; background: #111 center / cover no-repeat; position: relative; }
   .ed .shot span { position: absolute; left: 10px; bottom: 10px; background: rgba(10, 12, 20, .78); color: #fff; font-size: 12.5px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
   .ed .body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
   .ed h2 { margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -.02em; display: flex; align-items: baseline; gap: 8px; }
@@ -59,7 +59,7 @@
   .flow .n { font-size: 12.5px; font-weight: 700; color: var(--gold); }
   .where { display: inline-block; margin-left: 6px; font-size: 11.5px; font-weight: 700; padding: 0 6px; border-radius: 3px; vertical-align: 2px; background: #edf0f7; color: var(--navy); }
   .where.ai { background: var(--gold-soft); color: var(--gold); }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
   .two .block { margin-top: 0; }
   .qa { margin: 0; font-size: 14px; }
   .qa dt { font-weight: 700; margin-top: 8px; }
@@ -70,6 +70,39 @@
 
   footer { margin: 22px 0 28px; color: var(--faint); font-size: 13px; text-align: center; }
 
+  /* 넓은 화면: 글자와 여백을 조금 키운다 */
+  @media (min-width: 1200px) {
+    body { font-size: 16px; }
+    .top .in { min-height: 54px; }
+    .brand { font-size: 17px; }
+    .hero { padding: 34px 0 24px; }
+    .ed .shot { aspect-ratio: 2 / 1; background-position: center 42%; }
+    .hero h1 { font-size: 46px; }
+    .hero p { font-size: 18px; max-width: 780px; margin-top: 10px; }
+    .eds, .two { gap: 24px; }
+    .two { margin-top: 24px; }
+    .ed .body { padding: 22px 26px 24px; }
+    .ed h2 { font-size: 28px; }
+    .ed h2 small { font-size: 15px; }
+    .ed .what { font-size: 17px; margin: 6px 0 12px; }
+    .ed dl { font-size: 15.5px; margin-bottom: 18px; }
+    .ed .shot span { font-size: 14px; padding: 3px 10px; left: 14px; bottom: 14px; }
+    .btn { font-size: 16px; padding: 11px 20px; }
+    .ed .more { font-size: 15px; }
+    .block { padding: 24px 28px; margin-top: 24px; }
+    .block h2 { font-size: 21px; margin-bottom: 16px; }
+    .flow { gap: 16px; }
+    .flow li, .qa, .block p { font-size: 15.5px; }
+    .flow b { font-size: 17px; }
+    footer { font-size: 14px; margin: 30px 0 36px; }
+  }
+
+  /* 아주 넓은 화면: 화면 전체를 키운다 (브라우저 확대처럼). 빈 여백 대신 내용이 화면을 채우게 */
+  @media (min-width: 1500px) { :root { --z: 1.1; --pad: 48px; --w: 1320px; } }
+  @media (min-width: 1700px) { :root { --z: 1.2; } }
+  @media (min-width: 1900px) { :root { --z: 1.3; } }
+  @media (min-width: 2300px) { :root { --z: 1.5; } }
+  html { zoom: var(--z, 1); }
   @media (max-width: 760px) {
     .eds, .two { grid-template-columns: 1fr; }
     .flow { grid-template-columns: 1fr 1fr; }
@@ -138,7 +171,7 @@
     </ol>
   </section>
 
-  <div class="two" style="margin-top:16px">
+  <div class="two">
     <section class="block">
       <h2>자주 묻는 것</h2>
       <dl class="qa">

@@ -20,7 +20,7 @@
   /* 범용판은 칠판색, 역사판은 남색 (예시 게임의 색과 같게) */
   :root[data-ed="general"] { --main: #1f4536; --main-2: #2b5a47; --main-soft: #eaf2ed; }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; word-break: keep-all; overflow-wrap: break-word; }
+  body { margin: 0; min-height: calc(100vh / var(--z, 1)); display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; word-break: keep-all; overflow-wrap: break-word; }
   code { font-family: var(--mono); font-size: .88em; background: var(--bg); padding: 0 4px; border-radius: 3px; }
   a { color: var(--main); }
   .hidden { display: none !important; }
@@ -40,7 +40,7 @@
   /* 위: 이름과 단계 */
   .top { position: sticky; top: 0; z-index: 10; }
   .top-bar { background: var(--main); color: #fff; }
-  .top-bar .in, .steps .in, .bar .in, main { max-width: 920px; margin: 0 auto; }
+  .top-bar .in, .steps .in, .bar .in, main { max-width: var(--w, 920px); margin: 0 auto; }
   .top-bar .in { display: flex; align-items: center; gap: 10px; padding: 7px 16px; min-height: 44px; }
   .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; letter-spacing: -.01em; }
   .brand svg { color: var(--accent); flex: none; }
@@ -58,8 +58,8 @@
   .steps button[aria-current="step"] .n { background: var(--main); border-color: var(--main); color: #fff; }
 
   /* 가운데: 한 번에 한 단계만 */
-  main { flex: 1 0 auto; width: 100%; padding: 14px 16px 18px; }
-  .page { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px 20px; }
+  main { flex: 1 0 auto; width: 100%; padding: 14px 16px 18px; display: flex; flex-direction: column; }
+  .page { flex: 1 0 auto; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px 20px; } /* 짧은 쪽도 아래 단추까지 채운다 */
   .head { display: flex; align-items: flex-start; gap: 10px 12px; flex-wrap: wrap; margin-bottom: 14px; }
   .head > div:first-child { flex: 1 1 320px; min-width: 0; }
   .head .tools { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -200,6 +200,44 @@
 
   #autoframe { position: absolute; left: -3000px; top: 0; width: 960px; height: 640px; border: 0; }
 
+  /* 넓은 화면: 더 넓게 쓰고 글자와 칸을 조금 키운다 */
+  @media (min-width: 1200px) {
+    :root { --w: min(1280px, 94vw); }
+    body { font-size: 16px; }
+    .top-bar .in { min-height: 52px; padding-inline: 24px; }
+    .brand { font-size: 18px; }
+    .top-bar .help-btn { font-size: 14.5px; padding: 5px 14px; }
+    .steps button { font-size: 15.5px; padding: 12px 6px 10px; }
+    .steps .n { width: 26px; height: 26px; font-size: 13.5px; }
+    main { padding: 20px 24px 22px; }
+    .page { padding: 26px 34px 30px; }
+    .kicker { font-size: 14px; }
+    .page h2 { font-size: 26px; }
+    .lead { font-size: 16px; }
+    .subtabs button { font-size: 15px; padding: 5px 11px; }
+    .fpage { gap: 18px 28px; }
+    .fld .l { font-size: 16px; }
+    .help { font-size: 14px; }
+    input[type=text], textarea, select { font-size: 16px; padding: 10px 13px; }
+    textarea { min-height: 96px; }
+    button { font-size: 15.5px; }
+    button.small { font-size: 14px; }
+    button.big { font-size: 17px; padding: 12px 22px; }
+    .guide { gap: 20px 48px; }
+    .guide .lead, .gsteps b { font-size: 16.5px; }
+    .guide dl, .gsteps p, .flow li, .tips, .note, .checks label, .optlist label, .issue { font-size: 15px; }
+    .flow li b { font-size: 16px; }
+    .slots { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .bar .in { padding: 12px 24px; }
+    .bar .hint { font-size: 15px; }
+    #btn-next { font-size: 16.5px; padding: 11px 24px; }
+  }
+  /* 아주 넓은 화면: 화면 전체를 키운다 (브라우저 확대처럼). 빈 여백 대신 내용이 화면을 채우게 */
+  @media (min-width: 1500px) { :root { --z: 1.1; --w: 1280px; } }
+  @media (min-width: 1700px) { :root { --z: 1.2; } }
+  @media (min-width: 1900px) { :root { --z: 1.3; } }
+  @media (min-width: 2300px) { :root { --z: 1.5; } }
+  html { zoom: var(--z, 1); }
   @media (max-width: 760px) {
     .guide { grid-template-columns: 1fr; }
     .flow { grid-template-columns: 1fr; }
