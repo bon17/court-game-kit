@@ -10,7 +10,7 @@ import path from 'node:path';
 const kit = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const G = path.join(kit, 'general'), H = path.join(kit, 'history');
 const SHARED = ['index.html', 'maker.html', 'CLAUDE.md', 'AGENTS.md', '.gitignore', '.github', 'engine', 'tools', 'ai/데이터_형식.md',
-  'docs/처음_시작하기.md', 'docs/그림_넣기.md', 'docs/학생에게_나눠주기.md', 'docs/답_모으기_구글시트.md'];
+  'docs/처음_시작하기.md', 'docs/그림_넣기.md', 'docs/학생에게_나눠주기.md'];
 const GENERATED = ['engine/bundle.js']; // 판마다 따로 만드는 파일
 const check = process.argv.includes('--check');
 let diff = 0;

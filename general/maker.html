@@ -554,7 +554,7 @@
   // 이 칸을 써 달라는 글: 수업 정보(적은 칸들) + 이 칸에 쓸 것 + 선생님 메모
   function fieldPrompt(f) {
     // 내용에 도움이 되는 칸만 (색, 글꼴, 학생 정보, 만든이 같은 것과 'AI가 …' 로 남겨 둔 고르기는 빼고)
-    const SKIP = ['만든이', '그림체', '테마', '학생정보', '그림', '원칙', '주의'];
+    const SKIP = ['만든이', '그림체', '테마', '그림', '원칙', '주의'];
     const ctx = fields.filter((x) => x.id !== f.id && !SKIP.includes(x.id) && x.종류 !== 'checks').map((x) => {
       const v = S.form[x.id], t = String(v || '').trim();
       if (x.종류 === 'select' && /^AI가/.test(t)) return null;
