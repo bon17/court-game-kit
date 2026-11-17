@@ -3,7 +3,9 @@
   const G = window.G;
   const $ = G.$, h = G.h;
   const app = $('#app'), stage = $('#stage'), hud = $('#hud'), scene = $('#scene');
-  const bgEl = $('#bg'), charEl = $('#char'), deskEl = $('#desk'), cutEl = $('#cut');
+  const bgEl = $('#bg'), charEl = $('#char'), deskEl = $('#desk'), cutEl = $('#cut'), signEl = $('#place-sign');
+  // 그림이 없는 장소: 장소 이름 팻말을 화면 글자로 띄운다 (게임 글꼴로 보이게)
+  const showSign = (s) => { signEl.hidden = !s; signEl.replaceChildren(...(s ? [s.이모지 ? G.h('span', { class: 'ic' }, s.이모지) : '', s.이름] : [])); };
 
   // ─────────── 배치 ───────────
   // 가로 화면: 3:2 장면 위에 대사창과 버튼을 겹친다. 세로 화면: 위에 장면, 아래에 대사창과 버튼.
@@ -76,7 +78,9 @@
       else {
         S.seat = null;
         stage.dataset.seat = '';
-        G.setImg(bgEl, b.그림 === null ? null : b.그림 || 'backgrounds/' + name);
+        const key = b.그림 === null ? null : b.그림 || 'backgrounds/' + name;
+        showSign(null);
+        G.setImg(bgEl, key).then(() => { if (S.bgName === name && !S.court) showSign(G.placeSign(name, key)); });
         G.setImg(deskEl, b.책상 || null);
         setCharBox(b.인물자리);
       }
@@ -90,6 +94,7 @@
       const z = G.cfg.법정자리[seat] || G.cfg.법정자리['증언대'];
       S.seat = seat;
       stage.dataset.seat = seat;
+      showSign(null);
       G.setImg(bgEl, z.배경);
       G.setImg(deskEl, z.책상 || null);
       setCharBox(z.인물자리);

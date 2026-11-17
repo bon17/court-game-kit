@@ -10,7 +10,8 @@
   --point: #ffb13b;      /* 〔추궁할 낱말〕 */
   --hl: #ffd76a;         /* **강조** */
   --thought: #9fd6ff;    /* (속마음) */
-  --font: "Nanum Myeongjo", "나눔명조", "AppleMyungjo", "Batang", "바탕", serif;
+  --font: "Paperlogy", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif;
+  --title-font: "Cafe24 ClassicType", "Nanum Myeongjo", "AppleMyungjo", "Batang", serif;  /* 제목, 외침, 판결 */
 }
 
 * { box-sizing: border-box; }
@@ -32,6 +33,9 @@ img { -webkit-user-drag: none; }
 #scene { position: absolute; inset: 0; transition: filter 1.2s; }
 #bg { object-fit: cover; z-index: 1; transition: filter .8s; }
 #cut { object-fit: cover; z-index: 2; }
+#place-sign { position: absolute; z-index: 2; left: 4.5%; top: 6.5%; display: flex; align-items: center; gap: .35em; padding: .25em .75em .3em; border-radius: .35em; background: rgba(10, 12, 20, .74); border: max(2px, calc(var(--u) * 5)) solid var(--gold); color: #fff; font-weight: 800; font-size: max(16px, calc(var(--u) * 50)); line-height: 1.25; letter-spacing: -.01em; box-shadow: 0 4px 14px rgba(0, 0, 0, .35); }
+#place-sign .ic { font-size: .95em; }
+#place-sign[hidden] { display: none; }
 #char { position: absolute; z-index: 3; left: 16.667%; width: 66.667%; top: 4%; height: 96%; object-fit: contain; object-position: 50% 100%; transition: opacity .6s, filter .8s; }
 /* 법정 자리별 인물 크기: 몸 아래쪽이 책상 뒤에 숨도록 */
 #stage[data-seat="증언대"] #char { left: 23%; width: 54%; top: 14%; height: 82%; }
@@ -466,3 +470,6 @@ textarea.text { line-height: 1.5; resize: vertical; }
 .note .bubble b { display: block; font-size: .75em; color: #7a5a2a; margin-bottom: 2px; }
 .note .picked.small { align-items: center; gap: 14px; margin-bottom: 10px; }
 .note .picked.small .card { width: min(120px, 30vw); }
+
+/* 제목 글꼴 (설정의 테마.제목글꼴): 처음 화면 제목, 화 제목, 외침, 증언 시작, 판결, 도장, 새 기록 */
+.title-screen .logo h1, .episode-title .ttl, .shout span, .banner span, .verdict b, .stamp, #popup .pop-band { font-family: var(--title-font); font-synthesis: none; }

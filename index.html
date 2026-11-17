@@ -5,14 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>법정 추리 수업 게임 키트</title>
 <meta name="description" content="선생님이 평소 쓰는 AI로 수업용 법정 추리 웹 게임을 만드는 키트. 범용판과 역사판.">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/maker-SSAM/korean-ofl-fonts@v1.0.0/fonts/keris-baeum/keris-baeum.css" media="print" onload="this.media='all'">
 <style>
   :root {
     --ink: #1e2230; --sub: #5c6373; --faint: #8b90a0; --line: #e5e0d6; --field: #cdc6b7; --bg: #f3f0e9; --card: #fff;
     --navy: #1c2b52; --navy-2: #2a3c6e; --green: #1f4536; --green-2: #2b5a47; --accent: #e2bf6e; --gold: #85621a; --gold-soft: #f5edda;
-    --serif: "Nanum Myeongjo", "나눔명조", "AppleMyungjo", "Batang", serif;
-    --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif;
+    --font: "KERIS BAEUM", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif;
     color-scheme: light;
   }
   * { box-sizing: border-box; }
@@ -29,7 +27,7 @@
   .top nav a:hover { background: rgba(255, 255, 255, .12); opacity: 1; }
 
   .hero { padding: 30px 0 22px; }
-  .hero h1 { margin: 0; font-family: var(--serif); font-size: clamp(26px, 4.4vw, 36px); line-height: 1.3; letter-spacing: -.02em; font-weight: 800; }
+  .hero h1 { margin: 0; font-size: clamp(26px, 4.4vw, 36px); line-height: 1.3; letter-spacing: -.02em; font-weight: 800; }
   .hero p { margin: 8px 0 0; max-width: 640px; color: var(--sub); font-size: 16px; }
 
   .eds { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -37,8 +35,7 @@
   .ed .shot { display: block; aspect-ratio: 16 / 10; background: #111 center / cover no-repeat; position: relative; }
   .ed .shot span { position: absolute; left: 10px; bottom: 10px; background: rgba(10, 12, 20, .78); color: #fff; font-size: 12.5px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
   .ed .body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
-  .ed h2 { margin: 0; font-family: var(--serif); font-size: 23px; font-weight: 800; letter-spacing: -.02em; display: flex; align-items: baseline; gap: 8px; }
-  .ed h2 small { font-family: var(--font); }
+  .ed h2 { margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -.02em; display: flex; align-items: baseline; gap: 8px; }
   .ed h2 small { font-size: 13.5px; font-weight: 600; color: var(--sub); }
   .ed .what { margin: 4px 0 10px; font-size: 15px; }
   .ed dl { margin: 0 0 14px; font-size: 14px; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; }

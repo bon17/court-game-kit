@@ -41,15 +41,21 @@
     '남색금빛': ['#13224a', '#e8b84a'], '칠판': ['#1d4536', '#f0e2a8'], '노을': ['#4a2238', '#ffb86b'],
     '바다': ['#0f4658', '#9fe3ff'], '먹빛': ['#2b2b30', '#e6e2d6'], '숲': ['#243b22', '#c9e27a'],
   };
-  D.FONTS = {
+  // 글꼴: 학교 안심(KERIS) 오픈 폰트. 인터넷이 되면 받아 쓰고, 안 되면 기기 글꼴로 나온다
+  //   파일은 「한글 OFL 폰트 창고」(github.com/maker-SSAM/korean-ofl-fonts) 의 v1.0.0 을 jsDelivr 로 받는다
+  const OFL = 'https://cdn.jsdelivr.net/gh/maker-SSAM/korean-ofl-fonts@v1.0.0/fonts/';
+  D.FONTS = { // 대사, 이름표, 버튼
+    '고딕': '"Paperlogy", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif',
     '명조': '"Nanum Myeongjo", "나눔명조", "AppleMyungjo", "Batang", "바탕", serif',
-    '고딕': '"Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif',
   };
-  // 인터넷이 되면 받아 쓰는 글꼴 (둘 다 SIL 오픈 폰트 라이선스). 인터넷이 없으면 위의 기기 글꼴로 나온다
   D.FONT_FILES = {
-    '명조': 'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap',
-    '고딕': 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css',
+    '고딕': OFL + 'paperlogy/paperlogy.css', // 페이퍼로지 (OFL)
+    '명조': 'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap', // 나눔명조 (OFL)
   };
+  D.TITLE_FONTS = { // 처음 화면 제목, 외침, 판결. '고딕', '명조' 를 적으면 대사 글꼴의 굵은 글자
+    '클래식': '"Cafe24 ClassicType", "Nanum Myeongjo", "AppleMyungjo", "Batang", serif',
+  };
+  D.TITLE_FONT_FILES = { '클래식': OFL + 'cafe24-classictype/cafe24-classictype.css' }; // 카페24 클래식타입 (카페24 라이선스, OFL)
   // 엔진이 스스로 내는 효과음 이름 (my-game/audio/ 에 이 파일이 있으면 소리가 난다)
   D.SOUNDS = {
     BGM: {},

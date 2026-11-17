@@ -32,7 +32,7 @@
   G.esc = esc;
 
   // ─────────── 기본값 (engine/js/defaults.js) ───────────
-  const { EXPR, EXPR_EMOJI, SEATS, KINDS, THEMES, FONTS, FONT_FILES, SOUNDS } = window.KIT_DEFAULTS;
+  const { EXPR, EXPR_EMOJI, SEATS, KINDS, THEMES, FONTS, FONT_FILES, TITLE_FONTS, TITLE_FONT_FILES, SOUNDS } = window.KIT_DEFAULTS;
   G.cmdKey = window.KIT_DEFAULTS.cmdKey;
 
   // ─────────── 설정 읽기 ───────────
@@ -84,12 +84,15 @@
     root.setProperty('--gold-light', mix(point, '#ffffff', 0.55));
     root.setProperty('--gold-dark', mix(point, '#000000', 0.45));
     root.setProperty('--on-gold', mix(base, '#000000', 0.6));
-    const font = FONTS[t.글꼴] ? t.글꼴 : FONTS[g.글꼴] ? g.글꼴 : '명조'; // 적지 않으면 명조
+    const font = FONTS[t.글꼴] ? t.글꼴 : FONTS[g.글꼴] ? g.글꼴 : '고딕'; // 대사 글꼴. 적지 않으면 고딕(페이퍼로지)
+    const tf = [t.제목글꼴, g.제목글꼴].find((k) => TITLE_FONTS[k] || FONTS[k]) || '클래식'; // 제목 글꼴
     root.setProperty('--font', FONTS[font]);
+    root.setProperty('--title-font', TITLE_FONTS[tf] || FONTS[tf]);
     // 글꼴 파일은 인터넷에서 받는다 (기다리지 않고 받는 대로 바뀐다. 못 받으면 기기 글꼴)
-    if (FONT_FILES && FONT_FILES[font] && !document.querySelector('link[data-kit-font]')) {
+    for (const href of [FONT_FILES[font], TITLE_FONT_FILES[tf] || FONT_FILES[tf]]) {
+      if (!href || [...document.querySelectorAll('link[data-kit-font]')].some((l) => l.href === href)) continue;
       const link = document.createElement('link');
-      link.rel = 'stylesheet'; link.href = FONT_FILES[font]; link.setAttribute('data-kit-font', font);
+      link.rel = 'stylesheet'; link.href = href; link.setAttribute('data-kit-font', '');
       document.head.append(link);
     }
     for (const [k, v] of Object.entries(C.기록종류)) root.setProperty('--k-' + G.kindKey(k), v.색 || '#e8b84a');
@@ -157,8 +160,8 @@
   // 그림 파일이 없으면 코드로 그린 그림을 쓴다: 인물(단순한 그림 얼굴), 법정, 장소, 증거 카드.
   // 테마 색(바탕, 포인트)을 따라가서 게임마다 색이 맞는다.
   const svgUrl = (svg) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-  const FONT = 'font-family="Pretendard Variable, Pretendard, Noto Sans KR, Malgun Gothic, Apple SD Gothic Neo, sans-serif"';
-  const SERIF = 'font-family="Nanum Myeongjo, AppleMyungjo, Batang, serif"';
+  // 그림(SVG) 속 글자는 웹 글꼴을 쓸 수 없어서 기기의 고딕으로 쓴다. 장소 이름 팻말은 그림 밖(화면 글자)으로 띄운다
+  const FONT = 'font-family="Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif"';
   const EMOJI = 'font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif"';
   const INK = '#2a2230', LINE = 'rgba(20,16,28,.55)';
   const hashOf = (s) => { let x = 7; for (const ch of String(s)) x = (x * 31 + ch.codePointAt(0)) >>> 0; return x; };
@@ -356,10 +359,9 @@
   }
   // 장소: 벽, 창, 바닥, 장소 이름 팻말 (색과 이모지는 설정의 배경에서)
   function placePlaceholder(name, b) {
-    const { point } = themeColors();
     const cols = Array.isArray(b.색) ? b.색 : [b.색];
     const c0 = hex(cols[0]) ? cols[0] : nameColor(name), c1 = hex(cols[1]) ? cols[1] : mix(c0, '#000000', 0.75);
-    const floor = mix(c0, '#000000', 0.55), frame = mix(c0, '#000000', 0.35), icon = b.이모지 || '';
+    const floor = mix(c0, '#000000', 0.55), frame = mix(c0, '#000000', 0.35);
     return `<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
       <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mix(c0, '#ffffff', 0.06)}"/><stop offset="1" stop-color="${c1}"/></linearGradient>
       <linearGradient id="w" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff8e0" stop-opacity=".55"/><stop offset="1" stop-color="#fff8e0" stop-opacity=".08"/></linearGradient>
@@ -369,10 +371,7 @@
       <path d="M1000 440 L760 1024 L1536 1024 L1536 700 Z" fill="#fff8e0" opacity=".06"/>
       <rect x="0" y="640" width="1536" height="14" fill="${mix(c0, '#000000', 0.4)}"/><rect x="0" y="654" width="1536" height="370" fill="${floor}"/>
       ${[...Array(9)].map((_, i) => `<path d="M${768 + (i - 4) * 120} 654 L${768 + (i - 4) * 420} 1024" stroke="${mix(floor, '#000000', 0.25)}" stroke-width="5"/>`).join('')}
-      <rect width="1536" height="1024" fill="url(#v)"/>
-      <g transform="translate(70 70)"><rect width="${Math.max(300, (icon ? 150 : 76) + String(name).length * 52)}" height="108" rx="10" fill="rgba(10,12,20,.72)" stroke="${point}" stroke-width="5"/>
-      ${icon ? `<text x="62" y="56" ${EMOJI} font-size="56" text-anchor="middle" dominant-baseline="central">${esc(icon)}</text>` : ''}
-      <text x="${icon ? 112 : 38}" y="58" ${SERIF} font-size="52" font-weight="800" fill="#fff" dominant-baseline="central">${esc(name)}</text></g></svg>`;
+      <rect width="1536" height="1024" fill="url(#v)"/></svg>`;
   }
   // 증거 카드: 위 띠는 기록 종류의 색
   function evidencePlaceholder(name, icon, color) {
@@ -385,7 +384,7 @@
       ${[0, 1, 2].map((i) => `<path d="M140 ${566 + i * 44} L628 ${566 + i * 44}" stroke="#c9b48a" stroke-width="4"/>`).join('')}
       <circle cx="384" cy="300" r="128" fill="#fffaf0" stroke="#c9b48a" stroke-width="6"/>
       <text x="384" y="306" ${EMOJI} font-size="150" text-anchor="middle" dominant-baseline="central">${esc(icon || '📄')}</text>
-      <text x="384" y="500" ${SERIF} font-size="${size}" font-weight="800" fill="#3b2a0e" text-anchor="middle">${esc(name)}</text></svg>`;
+      <text x="384" y="500" ${FONT} font-size="${size}" font-weight="700" fill="#3b2a0e" text-anchor="middle">${esc(name)}</text></svg>`;
   }
   G.placeholder = (key) => {
     const [dir, file] = [key.slice(0, key.indexOf('/')), key.slice(key.indexOf('/') + 1)];
@@ -406,6 +405,8 @@
     }
     return '';
   };
+  // 그림이 없는 장소 배경이면 팻말에 쓸 이름과 이모지를 돌려준다
+  G.placeSign = (name, key) => { const b = G.cfg.배경[name]; return b && !b.법정 && key && G.missing.has(key) ? { 이름: name, 이모지: b.이모지 || '' } : null; };
   G.isPlaceholder = (url) => typeof url === 'string' && url.startsWith('data:image/svg+xml');
   G.setImg = async (el, key) => {
     el.dataset.key = key || '';
