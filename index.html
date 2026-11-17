@@ -4,80 +4,162 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>법정 추리 수업 게임 키트</title>
+<meta name="description" content="선생님이 평소 쓰는 AI로 수업용 법정 추리 웹 게임을 만드는 키트. 범용판과 역사판.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap" media="print" onload="this.media='all'">
 <style>
+  :root {
+    --ink: #1e2230; --sub: #5c6373; --faint: #8b90a0; --line: #e5e0d6; --field: #cdc6b7; --bg: #f3f0e9; --card: #fff;
+    --navy: #1c2b52; --navy-2: #2a3c6e; --green: #1f4536; --green-2: #2b5a47; --accent: #e2bf6e; --gold: #85621a; --gold-soft: #f5edda;
+    --serif: "Nanum Myeongjo", "나눔명조", "AppleMyungjo", "Batang", serif;
+    --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif;
+    color-scheme: light;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; background: #f4f6fa; color: #1c2333; font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; line-height: 1.65; word-break: keep-all; }
-  header { background: #13224a; color: #fff; padding: 44px 16px 36px; text-align: center; }
-  header h1 { margin: 0; font-size: clamp(26px, 5vw, 40px); color: #ffe29a; }
-  header p { margin: 10px auto 0; max-width: 640px; opacity: .92; }
-  main { max-width: 960px; margin: 0 auto; padding: 20px 14px 60px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
-  .card { background: #fff; border: 1px solid #d9dee8; border-radius: 16px; padding: 20px; }
-  .card h2 { margin: 0 0 4px; font-size: 22px; }
-  .card .who { color: #5a6478; margin: 0 0 12px; }
-  .card ul { margin: 0 0 14px; padding-left: 1.2em; }
-  .btns { display: flex; flex-direction: column; gap: 8px; }
-  a.btn { display: block; text-align: center; padding: 11px 14px; border-radius: 10px; border: 1px solid #1f4fa3; background: #1f4fa3; color: #fff; font-weight: 800; text-decoration: none; }
-  a.btn.sub { background: #fff; color: #1f4fa3; }
-  section { background: #fff; border: 1px solid #d9dee8; border-radius: 16px; padding: 18px 20px; margin-top: 16px; }
-  section h2 { margin: 0 0 8px; font-size: 19px; }
-  ol { margin: 0; padding-left: 1.3em; }
-  footer { text-align: center; color: #5a6478; font-size: 14px; margin-top: 22px; }
-  footer a { color: inherit; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.6; word-break: keep-all; overflow-wrap: break-word; }
+  a { color: inherit; }
+  .in { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+
+  .top { background: var(--navy); color: #fff; }
+  .top .in { display: flex; align-items: center; gap: 8px; min-height: 46px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; }
+  .brand svg { color: var(--accent); flex: none; }
+  .top nav { margin-left: auto; display: flex; gap: 4px; }
+  .top nav a { text-decoration: none; font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 6px; opacity: .9; }
+  .top nav a:hover { background: rgba(255, 255, 255, .12); opacity: 1; }
+
+  .hero { padding: 30px 0 22px; }
+  .hero h1 { margin: 0; font-family: var(--serif); font-size: clamp(26px, 4.4vw, 36px); line-height: 1.3; letter-spacing: -.02em; font-weight: 800; }
+  .hero p { margin: 8px 0 0; max-width: 640px; color: var(--sub); font-size: 16px; }
+
+  .eds { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ed { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+  .ed .shot { display: block; aspect-ratio: 16 / 10; background: #111 center / cover no-repeat; position: relative; }
+  .ed .shot span { position: absolute; left: 10px; bottom: 10px; background: rgba(10, 12, 20, .78); color: #fff; font-size: 12.5px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+  .ed .body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+  .ed h2 { margin: 0; font-family: var(--serif); font-size: 23px; font-weight: 800; letter-spacing: -.02em; display: flex; align-items: baseline; gap: 8px; }
+  .ed h2 small { font-family: var(--font); }
+  .ed h2 small { font-size: 13.5px; font-weight: 600; color: var(--sub); }
+  .ed .what { margin: 4px 0 10px; font-size: 15px; }
+  .ed dl { margin: 0 0 14px; font-size: 14px; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; }
+  .ed dt { color: var(--sub); }
+  .ed dd { margin: 0; }
+  .ed dd a { color: var(--c); font-weight: 600; text-underline-offset: 2px; }
+  .ed .btns { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .ed.general { --c: var(--green); --c2: var(--green-2); }
+  .ed.history { --c: var(--navy); --c2: var(--navy-2); }
+  .btn { display: inline-block; text-decoration: none; font-weight: 600; font-size: 14.5px; line-height: 1.3; padding: 9px 15px; border-radius: 6px; border: 1px solid var(--c); background: var(--c); color: #fff; }
+  .btn:hover { background: var(--c2); border-color: var(--c2); }
+  .btn.sub { background: #fff; color: var(--c); border-color: var(--field); }
+  .btn.sub:hover { border-color: var(--c); }
+  .ed .more { font-size: 14px; color: var(--sub); margin-left: auto; }
+
+  .block { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; margin-top: 16px; }
+  .block h2 { margin: 0 0 12px; font-size: 18px; letter-spacing: -.02em; }
+  .flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .flow li { border-top: 3px solid var(--navy); padding-top: 8px; font-size: 14px; color: var(--sub); }
+  .flow b { display: block; color: var(--ink); font-size: 15px; }
+  .flow .n { font-size: 12.5px; font-weight: 700; color: var(--gold); }
+  .where { display: inline-block; margin-left: 6px; font-size: 11.5px; font-weight: 700; padding: 0 6px; border-radius: 3px; vertical-align: 2px; background: #edf0f7; color: var(--navy); }
+  .where.ai { background: var(--gold-soft); color: var(--gold); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .two .block { margin-top: 0; }
+  .qa { margin: 0; font-size: 14px; }
+  .qa dt { font-weight: 700; margin-top: 8px; }
+  .qa dt:first-child { margin-top: 0; }
+  .qa dd { margin: 1px 0 0; color: var(--sub); }
+  .block p { margin: 0 0 6px; font-size: 14px; color: var(--sub); }
+  .block p a { color: var(--navy); font-weight: 600; }
+
+  footer { margin: 22px 0 28px; color: var(--faint); font-size: 13px; text-align: center; }
+
+  @media (max-width: 760px) {
+    .eds, .two { grid-template-columns: 1fr; }
+    .flow { grid-template-columns: 1fr 1fr; }
+    .hero { padding: 22px 0 16px; }
+  }
+  @media (max-width: 420px) { .flow { grid-template-columns: 1fr; } .ed .more { margin-left: 0; } }
 </style>
 </head>
 <body>
-<header>
-  <h1>법정 추리 수업 게임 키트</h1>
-  <p>내 수업 내용으로 법정 추리 웹 게임을 만듭니다. 코딩을 몰라도, 평소 쓰는 AI만 있으면 됩니다.</p>
-</header>
-<main>
-  <div class="cards">
-    <div class="card">
-      <h2>범용판</h2>
-      <p class="who">모든 교과</p>
-      <ul>
-        <li>학생들의 오개념을 교과 지식으로 뒤집는 게임</li>
-        <li>예시: 「시든 화분 사건」 (과학, 약 10분)</li>
-      </ul>
-      <div class="btns">
-        <a class="btn" href="general/index.html">예시 게임 해 보기</a>
-        <a class="btn" href="general/maker.html">만들기 도우미 열기</a>
-        <a class="btn sub" href="https://github.com/bon17/court-game-kit/blob/main/general/README.md">안내 읽기</a>
-      </div>
-    </div>
-    <div class="card">
-      <h2>역사판</h2>
-      <p class="who">역사 수업</p>
-      <ul>
-        <li>통념과 왜곡된 주장을 사료로 뒤집는 게임</li>
-        <li>예시: 원작 「기억의 법정」 제1화 「군함도의 명부」 (약 40분)</li>
-        <li>짧은 예시: 「지도를 불태운 나라?」 (그림 없음, 약 10분)</li>
-      </ul>
-      <div class="btns">
-        <a class="btn" href="history/index.html">예시 게임 해 보기 (군함도의 명부)</a>
-        <a class="btn" href="history/maker.html">만들기 도우미 열기</a>
-        <a class="btn sub" href="history/example-daedong-map.html">짧은 예시 「지도를 불태운 나라?」</a>
-        <a class="btn sub" href="https://github.com/bon17/court-game-kit/blob/main/history/README.md">안내 읽기</a>
-      </div>
-    </div>
+<header class="top"><div class="in">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M8 20.5h8M4.5 6.5h15"/><path d="M4.5 6.5 2 13M4.5 6.5 7 13M1.6 13a2.9 2.9 0 0 0 5.8 0z"/><path d="M19.5 6.5 17 13M19.5 6.5 22 13M16.6 13a2.9 2.9 0 0 0 5.8 0z"/></svg>
+    법정 추리 수업 게임 키트
   </div>
-  <section>
+  <nav><a href="https://github.com/bon17/court-game-kit">GitHub · 내려받기</a></nav>
+</div></header>
+
+<main class="in">
+  <div class="hero">
+    <h1>내 수업으로 만드는 법정 추리 게임</h1>
+    <p>학생이 증언 속 모순을 찾아 증거를 내미는 웹 게임을, 선생님이 평소 쓰는 AI와 함께 만듭니다. 코딩은 몰라도 됩니다.</p>
+  </div>
+
+  <div class="eds">
+    <section class="ed general">
+      <a class="shot" href="general/index.html" style="background-image:url(assets/general.jpg)" aria-label="범용판 예시 게임 해 보기"><span>예시 「시든 화분 사건」</span></a>
+      <div class="body">
+        <h2>범용판 <small>모든 교과</small></h2>
+        <p class="what">학생들의 오개념을 교과 지식으로 뒤집는 게임</p>
+        <dl>
+          <dt>예시</dt><dd>「시든 화분 사건」 과학, 약 10분, 그림 없음</dd>
+        </dl>
+        <div class="btns">
+          <a class="btn" href="general/maker.html">만들기 도우미 열기</a>
+          <a class="btn sub" href="general/index.html">예시 게임 해 보기</a>
+          <a class="more" href="https://github.com/bon17/court-game-kit/blob/main/general/README.md">안내 읽기</a>
+        </div>
+      </div>
+    </section>
+    <section class="ed history">
+      <a class="shot" href="history/index.html" style="background-image:url(assets/history.jpg)" aria-label="역사판 예시 게임 해 보기"><span>원작 「기억의 법정」 제1화</span></a>
+      <div class="body">
+        <h2>역사판 <small>역사 수업</small></h2>
+        <p class="what">널리 퍼진 통념과 왜곡된 주장을 사료로 뒤집는 게임</p>
+        <dl>
+          <dt>예시</dt><dd>「군함도의 명부」 원작 제1화, 약 40분</dd>
+          <dt>짧은 예시</dt><dd><a href="history/example-daedong-map.html">「지도를 불태운 나라?」</a> 약 10분, 그림 없음</dd>
+        </dl>
+        <div class="btns">
+          <a class="btn" href="history/maker.html">만들기 도우미 열기</a>
+          <a class="btn sub" href="history/index.html">예시 게임 해 보기</a>
+          <a class="more" href="https://github.com/bon17/court-game-kit/blob/main/history/README.md">안내 읽기</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="block">
     <h2>만드는 순서</h2>
-    <ol>
-      <li>만들기 도우미에 <b>수업 설계</b>를 적습니다. (단원, 학습 목표, 핵심 지식이나 사료, 학생들의 오개념)</li>
-      <li>만들어진 글을 <b>내 AI</b>(Claude, ChatGPT, Gemini 등)에게 붙여 넣습니다.</li>
-      <li>AI가 써 준 답을 붙여 넣고 <b>점검</b>합니다. 문제가 있으면 버튼 하나로 AI에게 다시 고쳐 달라고 합니다.</li>
-      <li>직접 해 보고 <b>게임 파일 하나</b>로 받아 학생에게 나눠 줍니다.</li>
+    <ol class="flow">
+      <li><span class="n">1</span><b>설계서 쓰기<span class="where">도우미</span></b>단원, 학습 목표, 학생들이 자주 틀리는 생각을 적습니다.</li>
+      <li><span class="n">2</span><b>AI에게 주기<span class="where ai">내 AI</span></b>만들어진 글을 Claude, ChatGPT, Gemini 등에 붙여 넣습니다.</li>
+      <li><span class="n">3</span><b>점검하기<span class="where">도우미</span></b>AI의 답을 붙여 넣으면 오류를 찾고 끝까지 자동으로 돌려 봅니다.</li>
+      <li><span class="n">4</span><b>나눠 주기<span class="where">도우미</span></b>게임 파일 하나(.html)로 받아 학생에게 나눠 줍니다.</li>
     </ol>
   </section>
-  <section>
-    <h2>이용 조건</h2>
-    수업, 연수, 교사 모임에서 자유롭게 쓰고 고치고 나눌 수 있습니다 (CC BY-NC-SA 4.0). 출처를 표시해 주세요. 팔거나 유료 서비스에 넣을 수 없습니다.
-    키트로 만든 게임의 이야기와 그림은 만든 선생님의 것입니다. <a href="https://github.com/bon17/court-game-kit/blob/main/이용_안내.md">이용 안내</a>
-  </section>
-  <footer>원작 「기억의 법정」 · BONSSAM · <a href="https://github.com/bon17/court-game-kit">GitHub에서 보기 · 내려받기</a></footer>
+
+  <div class="two" style="margin-top:16px">
+    <section class="block">
+      <h2>자주 묻는 것</h2>
+      <dl class="qa">
+        <dt>무엇이 필요한가요?</dt>
+        <dd>평소 쓰는 AI 하나와 브라우저만 있으면 됩니다. 설치할 것은 없습니다.</dd>
+        <dt>학생은 어떻게 하나요?</dt>
+        <dd>받은 게임 파일을 열면 바로 시작합니다. 컴퓨터, 태블릿, 휴대폰 모두 됩니다.</dd>
+        <dt>그림이 꼭 있어야 하나요?</dt>
+        <dd>아니요. 그림이 없으면 이모지 얼굴과 색 배경으로 나옵니다.</dd>
+      </dl>
+    </section>
+    <section class="block">
+      <h2>이용 조건</h2>
+      <p>수업, 연수, 교사 모임에서 자유롭게 쓰고 고치고 나눌 수 있습니다 (CC BY-NC-SA 4.0). 출처를 표시해 주세요. 팔거나 유료 서비스에 넣을 수 없습니다.</p>
+      <p>키트로 만든 게임의 이야기와 그림은 만든 선생님의 것입니다. <a href="https://github.com/bon17/court-game-kit/blob/main/이용_안내.md">이용 안내</a></p>
+    </section>
+  </div>
+
+  <footer>원작 「기억의 법정」 · BONSSAM · <a href="https://github.com/bon17/court-game-kit">GitHub</a></footer>
 </main>
 </body>
 </html>

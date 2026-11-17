@@ -83,7 +83,7 @@
     root.setProperty('--gold-light', mix(point, '#ffffff', 0.55));
     root.setProperty('--gold-dark', mix(point, '#000000', 0.45));
     root.setProperty('--on-gold', mix(base, '#000000', 0.6));
-    const font = FONTS[t.글꼴] ? t.글꼴 : FONTS[g.글꼴] ? g.글꼴 : '고딕';
+    const font = FONTS[t.글꼴] ? t.글꼴 : FONTS[g.글꼴] ? g.글꼴 : '명조'; // 적지 않으면 명조
     root.setProperty('--font', FONTS[font]);
     // 글꼴 파일은 인터넷에서 받는다 (기다리지 않고 받는 대로 바뀐다. 못 받으면 기기 글꼴)
     if (FONT_FILES && FONT_FILES[font] && !document.querySelector('link[data-kit-font]')) {
@@ -188,8 +188,7 @@
       <defs><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${wall}"/><stop offset="1" stop-color="#14161f"/></linearGradient></defs>
       <rect width="1536" height="1024" fill="url(#w)"/>
       ${[...Array(7)].map((_, i) => `<rect x="${i * 256 - 6}" y="0" width="12" height="1024" fill="rgba(0,0,0,.14)"/>`).join('')}
-      <rect x="0" y="860" width="1536" height="164" fill="rgba(0,0,0,.28)"/>${wide}${bench}
-      <text x="1490" y="70" ${FONT} font-size="34" fill="rgba(255,255,255,.4)" text-anchor="end">${esc(seat)}</text></svg>`;
+      <rect x="0" y="860" width="1536" height="164" fill="rgba(0,0,0,.28)"/>${wide}${bench}</svg>`;
   }
   G.placeholder = (key) => {
     const [dir, file] = [key.slice(0, key.indexOf('/')), key.slice(key.indexOf('/') + 1)];
