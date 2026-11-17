@@ -151,6 +151,12 @@
   .issue code { display: block; overflow: auto; margin-top: 4px; background: #fff; padding: 2px 6px; white-space: pre; }
   #result details .checks { margin-top: 6px; }
 
+  .names { margin-top: 12px; }
+  .name-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 6px 14px; margin-top: 8px; }
+  .name-grid label { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .name-grid span { flex: none; min-width: 66px; color: var(--sub); }
+  .name-grid input { margin-top: 0; }
+
   /* 4. 그림 */
   .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); gap: 8px; margin-top: 8px; }
   .slot { border: 1px solid var(--line); border-radius: 8px; padding: 6px; text-align: center; background: #fff; font-size: 12.5px; }
@@ -593,6 +599,8 @@
     box.append(h('p', { class: 'gt' }, '「' + ((data.게임 || {}).제목 || '제목 없음') + '」'),
       h('div', { class: 'stat' }, [['화', eps.length + '개'], ['인물', Object.keys((data.게임 || {}).인물 || {}).length + '명'], ['증거', ev + '개'], ['증언', tests + '개'], ['대사', '약 ' + lines + '줄'], ['예상 시간', '약 ' + Math.max(5, Math.round(lines * 7 / 60 / 5) * 5) + '분']]
         .map(([k, v]) => h('div', {}, h('b', {}, v), h('small', {}, k)))));
+    const names = nameEditor(data);
+    if (names) box.append(names);
     const list = h('div', { class: 'issues' });
     if (!n('오류') && !n('주의')) list.append(issueEl('ok', '문제를 찾지 못했어요', '바로 해 볼 수 있습니다. 아래에서 끝까지 자동으로 실행해 본 결과도 확인하세요.'));
     else list.append(issueEl(n('오류') ? 'err' : 'warn', '오류 ' + n('오류') + '개, 주의 ' + n('주의') + '개', n('오류') ? '오류는 꼭 고쳐야 합니다. 아래 [AI에게 보낼 수정 요청 복사]를 눌러 AI에게 붙여 넣으세요.' : '주의는 실행은 되지만 뜻한 대로 보이지 않을 수 있는 것입니다.'));
@@ -611,6 +619,27 @@
     updateButtons();
     S.autoMsg = '';
     if (!n('오류')) autoRun(auto);
+  }
+  // 인물 이름 바꾸기: 설정의 이름바꾸기를 고친다. 이야기는 그대로 두고, 게임을 시작할 때 대사 속 이름까지 바뀐다
+  function nameEditor(data) {
+    const g = data.게임 || {}, people = Object.keys(g.인물 || {});
+    if (!people.length) return null;
+    const cur = Object.assign({}, g.이름바꾸기);
+    const rows = people.map((n) => [n, h('input', { type: 'text', value: String(cur[n] || n), 'aria-label': n + '의 새 이름' })]);
+    const apply = () => {
+      const m = {};
+      let changed = false;
+      for (const [n, i] of rows) { const v = i.value.trim() || n; m[n] = v; if (v !== String(cur[n] || n)) changed = true; }
+      if (!changed) { say('#said-names', '바뀐 이름이 없어요.'); return; }
+      (S.data.게임 = S.data.게임 || {}).이름바꾸기 = m;
+      paste.value = S.text = window.KIT_STRINGIFY(S.data).all; persist();
+      renderResult(); renderImages();
+      toast('이름을 바꿨어요. 게임에서는 대사 속 이름까지 모두 바뀝니다.');
+    };
+    return h('details', { class: 'names', open: Object.entries(cur).some(([o, n]) => n && n !== o) || null }, h('summary', {}, '인물 이름 바꾸기'),
+      h('p', { class: 'help' }, '오른쪽 칸만 고치면 됩니다. 이야기는 그대로 두고, 게임에 나오는 이름과 대사 속 이름이 모두 바뀝니다. 은/는, 이/가 같은 말도 새 이름에 맞춥니다.'),
+      h('div', { class: 'name-grid' }, rows.map(([n, i]) => h('label', {}, h('span', {}, n), i))),
+      h('div', { class: 'btns' }, h('button', { class: 'sub', type: 'button', onclick: apply }, '이름 바꾸기'), h('span', { class: 'said', id: 'said-names' })));
   }
   // 정답을 스스로 내면서 끝까지 실행해 본다 (보이지 않는 창에서)
   let autoTimer = null;
@@ -686,8 +715,8 @@
       Object.entries(ep.증거 || {}).forEach(([id, e]) => evs.push({ kind: 'ev', key: e.그림 || 'evidence/' + id, 이름: e.이름 || id, desc: e.그림설명 || '', 설명: D.list(e.설명).join(' ').replace(/\*\*/g, ''), max: 768 }));
       walk(ep.막.flatMap((m) => D.list(m.내용)), (c) => { if (c.말) add(c.말, c.표정); if (c.보이기) add(c.보이기, c.표정); if (c.등장) add(c.등장, c.표정); if (c.증인) add(c.증인, c.표정); if (c.보기) add(c.보기, c.보기표정); });
     });
-    const chars = [];
-    for (const [n, c] of Object.entries(g.인물 || {})) for (const e of used[n] || ['기본']) chars.push({ kind: 'char', key: 'characters/' + (c.파일 || 'char_' + n) + '_' + expr[e], 이름: n + ' · ' + e, who: n, first: e === '기본', look: EXPR_LOOK[expr[e]] || e, desc: c.생김새 || '', max: 1024, cut: true });
+    const chars = [], shown = (n) => String((g.이름바꾸기 || {})[n] || '').trim() || n; // 이름바꾸기로 바꾼 이름
+    for (const [n, c] of Object.entries(g.인물 || {})) for (const e of used[n] || ['기본']) chars.push({ kind: 'char', key: 'characters/' + (c.파일 || 'char_' + n) + '_' + expr[e], 이름: shown(n) + ' · ' + e, who: shown(n), first: e === '기본', look: EXPR_LOOK[expr[e]] || e, desc: c.생김새 || '', max: 1024, cut: true });
     const bgs = Object.entries(g.배경 || {}).filter(([, b]) => b && !b.법정 && b.그림 !== null).map(([n, b]) => ({ kind: 'place', key: b.그림 || 'backgrounds/' + n, 이름: n, desc: b.그림설명 || '', wide: true, max: 1536 }));
     const court = Object.entries(D.SEATS).flatMap(([n, z]) => [{ kind: 'seat', seat: n, key: z.배경, 이름: n + ' 배경', wide: true, max: 1536 }, z.책상 ? { kind: 'seat', seat: n, desk: true, key: z.책상, 이름: n + ' 책상 (앞그림)', wide: true, max: 1536, cut: true } : null]).filter(Boolean);
     const title = [g.제목그림 ? { kind: 'logo', key: g.제목그림, 이름: '제목 그림 (글자 대신)', wide: true, max: 1536, cut: true } : null, g.처음화면그림 ? { kind: 'cover', key: g.처음화면그림, 이름: '처음 화면 그림', wide: true, max: 1536 } : null].filter(Boolean);

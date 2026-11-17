@@ -74,6 +74,70 @@
   };
   D.list = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
+
+  // ─────────── 인물 이름 바꾸기 (설정의 이름바꾸기) ───────────
+  // 이야기는 그대로 두고, 게임을 시작할 때 모든 글과 이름표에서 이름을 바꾼다. 뒤에 붙은 조사(은/는, 이/가 …)도 새 이름에 맞춘다.
+  // 이름이 다른 낱말의 일부일 때(하늘 → 하늘색)는 바꾸지 않는다.
+  const HANGUL = /[가-힣]/;
+  const jong = (s) => { s = String(s); const c = s.charCodeAt(s.length - 1); return c >= 0xac00 && c <= 0xd7a3 ? (c - 0xac00) % 28 : /[lmnr]$/i.test(s) ? 1 : 0; };
+  // [받침 있을 때, 없을 때]. 이름 뒤의 '야' 는 부르는 말(지우야 → 신중한아)로 본다
+  const JOSA = [['이에요', '예요'], ['이었', '였'], ['이라고', '라고'], ['이라는', '라는'], ['이랑', '랑'], ['이나', '나'], ['아', '야'], ['이야', '야'], ['이지', '지'], ['이다', '다'], ['이고', '고'], ['이니까', '니까'], ['이면', '면'], ['이라서', '라서'], ['이요', '요'], ['으로', '로'], ['은', '는'], ['을', '를'], ['과', '와'], ['이', '가']];
+  // '지우다, 지우고' 처럼 이름이 낱말의 앞부분일 수 있어서, 이지·이다·이고·이니까·이면·이라서 는 '이' 가 붙은 모양일 때만 이름으로 본다
+  const COP = new Set(['이지', '이다', '이고', '이니까', '이면', '이라서']);
+  const FIXED = ['입니다', '입니까', '이시', '에게', '한테', '께서', '께', '의', '도', '만', '처럼', '보다', '부터', '까지', '하고', '에서', '에', '님', '씨', '네', '들'];
+  function nameTail(t, j0, old, neu) {
+    // **굵게** 로 감싼 이름: 닫는 ** 뒤의 조사를 본다 (**하늘**이지 → **민서**지)
+    const mark = t.startsWith('**', j0) ? '**' : '', j = j0 + mark.length;
+    const r = tailAt(t, j, old, neu + mark);
+    return r || (mark ? { text: neu, to: j0 } : null);
+  }
+  function tailAt(t, j, old, neu) {
+    const end = (k) => k >= t.length || !HANGUL.test(t[k]);
+    const nj = jong(neu.replace(/\*+$/, ''));
+    const pick = (a, v) => (a === '으로' ? (nj && nj !== 8 ? a : v) : nj ? a : v);
+    for (const [a, v] of JOSA) if (a.length > 1 && a[0] === '이' && t.startsWith(a, j) && (a === '이었' || end(j + a.length))) return { text: neu + pick(a, v), to: j + a.length }; // 이에요, 이었, 이랑 …
+    if (jong(old) && t[j] === '이') { // 별명처럼 붙인 '이' (한결이가, 하늘이의, 한결이 말)
+      const k = j + 1;
+      if (end(k)) return { text: neu + (nj ? '이' : ''), to: k };
+      for (const [a, v] of JOSA) if (v !== '가' && t.startsWith(v, k) && end(k + v.length)) return { text: neu + (nj ? '이' + v : v), to: k + v.length };
+      if (t.startsWith('가', k) && end(k + 1)) return { text: neu + (nj ? '이가' : '가'), to: k + 1 };
+      if (FIXED.some((f) => t.startsWith(f, k))) return { text: neu + (nj ? '이' : ''), to: k };
+    }
+    for (const [a, v] of JOSA) for (const form of COP.has(a) ? [a] : [a, v]) if (t.startsWith(form, j) && (a === '이었' || end(j + form.length))) return { text: neu + pick(a, v), to: j + form.length };
+    if (FIXED.some((f) => t.startsWith(f, j))) return { text: neu, to: j };
+    if (end(j)) return { text: neu, to: j };
+    return null; // 다른 낱말의 일부
+  }
+  function renameText(t, map, olds) {
+    let out = '', i = 0;
+    while (i < t.length) {
+      let hit = null;
+      if (i === 0 || !HANGUL.test(t[i - 1])) for (const o of olds) if (t.startsWith(o, i)) { hit = nameTail(t, i + o.length, o, map[o]); if (hit) break; }
+      if (hit) { out += hit.text; i = hit.to; } else { out += t[i]; i++; }
+    }
+    return out;
+  }
+  D.renameText = (t, map) => renameText(String(t), map, Object.keys(map).sort((a, b) => b.length - a.length));
+  // DATA 를 그 자리에서 바꾼다. 다 바꾼 뒤 이름바꾸기는 지운다 (두 번 바꾸지 않게)
+  D.renameData = (DATA) => {
+    const g = DATA && DATA.게임, map0 = g && g.이름바꾸기;
+    if (!g || !map0 || typeof map0 !== 'object' || Array.isArray(map0)) return DATA;
+    delete g.이름바꾸기;
+    const map = {};
+    for (const [o, n] of Object.entries(map0)) if (typeof n === 'string' && n.trim() && n.trim() !== o) map[o] = n.trim();
+    const olds = Object.keys(map).sort((a, b) => b.length - a.length);
+    if (!olds.length) return DATA;
+    for (const o of olds) { const c = g.인물 && g.인물[o]; if (c && typeof c === 'object' && !c.파일) c.파일 = 'char_' + o; } // 그림 파일 이름은 그대로
+    const walk = (v) => {
+      if (typeof v === 'string') return renameText(v, map, olds);
+      if (Array.isArray(v)) return v.map(walk);
+      if (v && typeof v === 'object') { const o = {}; for (const [k, x] of Object.entries(v)) o[renameText(k, map, olds)] = walk(x); return o; }
+      return v;
+    };
+    for (const k of Object.keys(DATA)) DATA[k] = walk(DATA[k]);
+    return DATA;
+  };
+
   root.KIT_DEFAULTS = D;
   if (typeof module !== 'undefined' && module.exports) module.exports = D;
 })(typeof window !== 'undefined' ? window : globalThis);

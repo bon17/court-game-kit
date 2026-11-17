@@ -34,9 +34,28 @@ const loadData = (dir) => {
     bad.ep1.막[0].내용.push({ 대사: '말하는 사람이 없는 대사' }, { 말: '없는사람', 대사: '안녕' }, { 표정: '미소', 말: Object.keys(data.게임.인물)[1], 대사: '순서가 바뀐 명령' }, { 증거획득: 'no_such' });
     const bi = check(bad);
     ok(bi.some((i) => i.수준 === '오류' && /no_such/.test(i.글)) && bi.some((i) => /말하는 사람이 없/.test(i.도움)) && bi.some((i) => /없는사람/.test(i.글)) && !bi.some((i) => /모르는 명령이에요: '표정'/.test(i.글)), '틀린 데이터의 문제를 찾아낸다');
+    // 이름바꾸기: 모든 인물 이름을 바꿔도 점검을 통과하고, 옛 이름이 대사에 남지 않는다
+    const renamed = JSON.parse(JSON.stringify(data)), people = Object.keys(renamed.게임.인물);
+    renamed.게임.이름바꾸기 = Object.fromEntries(people.map((n, i) => [n, ['가람', '나윤', '다솔', '라온', '마루', '바다', '사랑', '아라', '자람', '하랑', '한결', '보람'][i] || n + '새']));
+    const renIssues = check(JSON.parse(JSON.stringify(renamed))).filter((i) => i.수준 !== '참고');
+    globalThis.KIT_DEFAULTS.renameData(renamed);
+    const left = [];
+    const scan = (v) => { if (typeof v === 'string') { for (const n of people) if (new RegExp('(^|[^가-힣])' + n + '(?![가-힣]*색)').test(v) && !/^(characters|backgrounds|evidence)\//.test(v)) left.push(n + ': ' + v.slice(0, 40)); } else if (v && typeof v === 'object') Object.values(v).forEach(scan); };
+    scan(Object.fromEntries(Object.entries(renamed).filter(([k]) => k !== '게임')));
+    ok(!renIssues.length && !renamed.게임.이름바꾸기 && !people.some((n) => renamed.게임.인물[n]) && !left.length, '이름바꾸기로 인물 ' + people.length + '명의 이름을 모두 바꿀 수 있다' + (renIssues.length ? ' → ' + renIssues[0].글 : left.length ? ' → 남은 이름 ' + left[0] : ''));
     const guide = fs.readFileSync(path.join(kit, ed, 'ai/guide.js'), 'utf8');
     ok(guide.includes(JSON.stringify(fs.readFileSync(path.join(kit, ed, 'ai/AI_지침.md'), 'utf8')).slice(1, 200)), 'ai/guide.js 가 지금 지침으로 만들어져 있다');
   }
+
+  console.log('이름바꾸기: 조사 맞추기');
+  const R = (t, m) => globalThis.KIT_DEFAULTS.renameText(t, m);
+  const cases = [
+    ['지우야, 큰일이야!', { 지우: '신중한' }, '신중한아, 큰일이야!'], ['한결이가 하늘이의 잘못이라고', { 한결: '레테', 하늘: '민서' }, '레테가 민서의 잘못이라고'],
+    ['신중한은 레테를 보았다', { 신중한: '지우', 레테: '한결' }, '지우는 한결을 보았다'], ['**하늘**이지.', { 하늘: '민서' }, '**민서**지.'],
+    ['하늘색 후드티', { 하늘: '민서' }, '하늘색 후드티'], ['글씨를 지우고', { 지우: '신중한' }, '글씨를 지우고'], ['한나랑 같이', { 한나: '도윤' }, '도윤이랑 같이'],
+  ];
+  const bad = cases.filter(([t, m, want]) => R(t, m) !== want);
+  ok(!bad.length, '조사(은/는, 이/가, 아/야, 이랑/랑 …)를 새 이름에 맞춘다' + (bad.length ? ' → ' + bad[0][0] + ' → ' + R(bad[0][0], bad[0][1]) : ''));
 
   let chromium;
   try { ({ chromium } = require('playwright')); } catch (e) { console.log('Playwright가 없어서 브라우저 시험은 건너뜁니다.'); }

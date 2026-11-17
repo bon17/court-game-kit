@@ -42,6 +42,7 @@
   G.mix = mix;
 
   G.setup = () => {
+    KIT_DEFAULTS.renameData(DATA); // 설정의 이름바꾸기: 모든 글에서 인물 이름을 바꾼다
     const g = DATA.게임 || {};
     const merge2 = (base, add) => { const o = {}; for (const k of Object.keys(base)) o[k] = Object.assign({}, base[k]); for (const [k, v] of Object.entries(add || {})) o[k] = Object.assign({}, o[k] || {}, typeof v === 'string' ? { 이름: v } : v); return o; };
     const C = (G.cfg = {
