@@ -82,6 +82,13 @@ const loadData = (dir) => {
       await m.goto('file://' + path.join(dir, 'maker.html'));
       ok(await m.isVisible('#guide'), '만들기 도우미를 처음 열면 사용법이 나온다');
       await m.click('#btn-start'); await m.click('#btn-example');
+      // 설계서: 칸마다 AI에게 물어볼 글 (수업 정보와 선생님 메모가 들어간다), AI 답 다듬기
+      const ask = await m.evaluate(() => {
+        const K = window.KIT_MAKER, f = K.fields.find((x) => x.물어보기);
+        return { n: K.fields.filter((x) => x.물어보기).length, tools: document.querySelectorAll('.ask-tools').length, p: K.fieldPrompt(f), memo: String(K.S.form[f.id] || '').split('\n')[0], ctx: String(K.S.form[K.fields[0].id]),
+          clean: K.cleanAnswer('네, 여기 있어요!\n\n1. **첫째** 내용\n2. 둘째 내용\n* 셋째\n\n도움이 되었길 바라요.', false) };
+      });
+      ok(ask.n > 0 && ask.tools === ask.n && ask.p.includes(ask.ctx) && ask.p.includes(ask.memo) && ask.clean === '- 첫째 내용\n- 둘째 내용\n- 셋째', '설계서: 칸 ' + ask.n + '개마다 AI에게 물어볼 글을 만들고, AI의 답을 목록으로 다듬는다');
       const subs = await m.locator('#form .fpage').count();
       for (let i = 0; i < subs; i++) await m.click('#btn-next');
       ok(await m.isVisible('#s2'), '[다음]으로 설계서 ' + subs + '쪽을 넘기면 2단계(AI에게 주기)가 된다');
